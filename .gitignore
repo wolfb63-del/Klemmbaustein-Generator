@@ -1,0 +1,14 @@
+# Lokale Umgebung - enthaelt den Fusion-Installationspfad des jeweiligen
+# Rechners samt Benutzernamen und gehoert niemandem sonst.
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Sicherungen vor dem Verteilen in die Add-In-Ordner
+_backup-*/
+
+# Fertige Pakete und Druckdateien
+*.zip
+*.stl
