@@ -66,6 +66,7 @@ resources/              Symbole für die Schaltfläche
 werkzeuge/
   zeichnen.py           SVG-Zeichnungen aus den Konstruktionsdaten
   anleitung_bauen.py    erzeugt anleitung.html
+  test_logik.py         prüft die Rechenlogik ohne Fusion
 ```
 
 Die Bilder der Anleitung entstehen aus denselben Funktionen, die auch die
@@ -73,6 +74,16 @@ Geometrie in Fusion bauen. Neu erzeugen:
 
 ```bash
 python werkzeuge/anleitung_bauen.py
+```
+
+## Prüfen ohne Fusion
+
+Die Geometrie selbst braucht Fusion, die Rechenlogik dahinter nicht. Rund 150
+Prüfungen decken Kalibrierfaktoren, Grenzen, Noppenraster, Dateinamen und
+Infotexte ab — die Fusion-API wird dafür durch einen Stub ersetzt:
+
+```bash
+python werkzeuge/test_logik.py
 ```
 
 ## Rechtliches
