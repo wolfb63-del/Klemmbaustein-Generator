@@ -13,10 +13,14 @@ Ich habe ein Add-In für Autodesk Fusion gebaut, das klemmbaustein-kompatible
 Teile auf Knopfdruck erzeugt. Kein Skizzieren, kein Modellieren: Typ wählen,
 Größe eintippen, fertig.
 
-✅ Stein, Platte, Fliese und Technic-Stein
+✅ 11 Bauteiltypen: Stein, Platte, Fliese, Technic-Stein, Jumper-Platte,
+   Halbstein, Lochbalken, Eckstein, Rundstein, Schrägstein, Grundplatte
 ✅ 1×1 bis 32×32 Noppen, frei kombinierbar
 ✅ Echte Röhren an der Unterseite (bei 1×N Stege, wie beim Original)
 ✅ Live-Vorschau während der Eingabe
+✅ Kanten brechen: Fase oder Radius, getrennt für Einführkante, Noppen und
+   Außenkanten — macht das Zusammenstecken spürbar leichter
+✅ Druckerkalibrierung: du misst deinen Teststein, das Add-In rechnet
 ✅ Druckprofile für PETG, PLA, Resin — plus Regler für die Klemmkraft
 ✅ STL-Export direkt beim Erzeugen, mit sprechendem Dateinamen
 ✅ Serienmodus: legt die Steine automatisch nebeneinander ab
@@ -46,10 +50,10 @@ patentfreien Klemmbaustein-Rasters.*
 
 ## Variante B — sehr kurz (Kommentar / Gruppenregeln mit Zeichenlimit)
 
-🧱 Kostenloses Fusion-Add-In: erzeugt Klemmbausteine (Stein, Platte, Fliese,
-Technic) von 1×1 bis 32×32 auf Knopfdruck — mit Live-Vorschau, Druckprofilen,
-Klemmkraft-Regler und STL-Export. Läuft mit der Gratis-Hobbylizenz.
-Anleitung mit Kalibrier-Runde liegt bei. 📥 [LINK]
+🧱 Kostenloses Fusion-Add-In: erzeugt Klemmbausteine in 11 Bauteiltypen von
+1×1 bis 32×32 auf Knopfdruck — mit Live-Vorschau, Kantenbrechung,
+Druckerkalibrierung, Klemmkraft-Regler und STL-Export. Läuft mit der
+Gratis-Hobbylizenz. Anleitung mit Kalibrier-Runde liegt bei. 📥 [LINK]
 
 ---
 
