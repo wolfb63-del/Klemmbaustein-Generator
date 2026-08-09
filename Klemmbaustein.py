@@ -341,6 +341,7 @@ IN_KAL_Y_IST = 'kbKalYIst'
 IN_KAL_Z_SOLL = 'kbKalZSoll'
 IN_KAL_Z_IST = 'kbKalZIst'
 IN_KAL_RUND = 'kbKalRund'
+IN_KAL_UEBERNEHMEN = 'kbKalUebernehmen'
 IN_KAL_INFO = 'kbKalInfo'
 
 IN_SCHENKEL = 'kbSchenkel'
@@ -1320,7 +1321,8 @@ def _kalibrier_text(cfg):
     j = cfg.justage()
     if not j.ist_aktiv:
         return ('Beide Felder einer Achse leer lassen = nicht kalibriert. '
-                'Sonst Sollmass und nachgemessenes Istmass eintragen.')
+                'Sonst links das Mass eintragen, das im Modell steht '
+                '(Zeile "Aussenmass"), rechts das nachgemessene.')
 
     zeilen = ['<b>X</b> {} % &nbsp;|&nbsp; <b>Y</b> {} % &nbsp;|&nbsp; '
               '<b>Z</b> {} % Vorhalt'.format(
@@ -1373,6 +1375,31 @@ def _profil_uebernehmen(inputs, profil):
     for ident, wert in ((IN_KAL_X_SOLL, soll), (IN_KAL_X_IST, ist),
                         (IN_KAL_Y_SOLL, soll), (IN_KAL_Y_IST, ist),
                         (IN_KAL_RUND, profil.get('komp_rund', 0.0))):
+        feld = _finde(inputs, ident)
+        if feld:
+            feld.value = wert * MM
+
+
+def _modellmass_uebernehmen(inputs):
+    """Traegt die aktuellen Modellmasse in die drei Soll-Felder ein.
+
+    Beim Nachkalibrieren braucht der Faktor als Bezug das Mass, das Fusion
+    gerade baut - nicht das gewuenschte Endmass. Wer dort das Endmass
+    eintraegt, wirft den bisherigen Vorhalt weg und kompensiert nur noch den
+    Rest. Von Hand ist das eine Fehlerquelle, also uebernimmt es der Knopf.
+
+    Bewusst nur auf Knopfdruck und nicht automatisch: gemessen wird oft an
+    einem anderen Teil als dem gerade eingestellten, und ein stilles
+    Ueberschreiben der Referenz waere schlimmer als eine Handeingabe.
+    """
+    cfg = Einstellungen(inputs)
+    p = PRINT_PROFILES[cfg.profil]
+    j = cfg.justage()
+    ny = cfg.nx if _ist_rund(cfg.typ) else cfg.ny
+    masse = ((IN_KAL_X_SOLL, (cfg.nx * PITCH - p['gap']) * j.fx),
+             (IN_KAL_Y_SOLL, (ny * PITCH - p['gap']) * j.fy),
+             (IN_KAL_Z_SOLL, _hoehe(cfg.typ) * j.fz))
+    for ident, wert in masse:
         feld = _finde(inputs, ident)
         if feld:
             feld.value = wert * MM
@@ -1589,19 +1616,34 @@ class KlemmbausteinCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                         _konfig.zahl(schluessel, 0.0, 0.0, 1000.0) * MM))
                 return feld
 
-            _messfeld(IN_KAL_X_SOLL, 'X Sollmass', 'kal_x_soll').tooltip = (
-                'Das Mass, das laut Infozeile herauskommen sollte - '
-                'z. B. 31,80 mm fuer einen 4er-Stein in der Laenge.')
+            _messfeld(IN_KAL_X_SOLL, 'X im Modell', 'kal_x_soll').tooltip = (
+                'Das Mass, das im Modell steht - also die Zahl aus der Zeile '
+                '"Aussenmass" oben, NICHT das gewuenschte Endmass.\n\n'
+                'Beim ersten, noch unkalibrierten Druck ist beides dasselbe '
+                '(z. B. 31,80 mm beim 4er-Stein). Sobald eine Kalibrierung '
+                'wirkt, baut Fusion groesser - dann gehoert dieses groessere '
+                'Mass hier hinein, sonst geht der bisherige Vorhalt verloren. '
+                'Der Knopf darunter traegt es fuer dich ein.')
             _messfeld(IN_KAL_X_IST, 'X gemessen', 'kal_x_ist').tooltip = (
                 'Was am gedruckten Teil tatsaechlich mit dem Messschieber '
                 'herauskommt. Moeglichst an einem grossen Teil messen: an '
                 'kleinen Massen ueberwiegt der konstante Duesenfehler, und '
                 'daraus wird ein falscher Prozentwert.')
-            _messfeld(IN_KAL_Y_SOLL, 'Y Sollmass', 'kal_y_soll')
+            _messfeld(IN_KAL_Y_SOLL, 'Y im Modell', 'kal_y_soll')
             _messfeld(IN_KAL_Y_IST, 'Y gemessen', 'kal_y_ist')
-            _messfeld(IN_KAL_Z_SOLL, 'Z Sollmass', 'kal_z_soll').tooltip = (
-                'Die Bauhoehe, z. B. 9,60 mm beim Stein.')
+            _messfeld(IN_KAL_Z_SOLL, 'Z im Modell', 'kal_z_soll').tooltip = (
+                'Die Bauhoehe aus der Zeile "Aussenmass", z. B. 9,60 mm beim '
+                'unkalibrierten Stein. Achtung: die Hoehe, nicht Laenge oder '
+                'Breite.')
             _messfeld(IN_KAL_Z_IST, 'Z gemessen', 'kal_z_ist')
+
+            uebernehmen = kal_kinder.addBoolValueInput(
+                IN_KAL_UEBERNEHMEN, 'Modellmass uebernehmen', False, '', False)
+            uebernehmen.tooltip = (
+                'Traegt die aktuellen Modellmasse in die drei Felder "im '
+                'Modell" ein - genau das, was Fusion gerade baut.\n\n'
+                'Ablauf beim Nachkalibrieren: Teil drucken, hier druecken, '
+                'dann die gemessenen Werte daneben eintragen.')
 
             rund_in = kal_kinder.addValueInput(
                 IN_KAL_RUND, 'Rundungs-Aufmass', 'mm',
@@ -1726,6 +1768,13 @@ class KlemmbausteinInputChangedHandler(adsk.core.InputChangedEventHandler):
             elif geaendert.id in (IN_TYP, IN_KAL_KOPPELN):
                 _sichtbarkeit(inputs)
 
+            elif geaendert.id == IN_KAL_UEBERNEHMEN and geaendert.value:
+                # Ein Knopf, kein Schalter: sofort wieder ausrasten, sonst
+                # bliebe er gedrueckt stehen und liesse sich nicht erneut
+                # betaetigen.
+                geaendert.value = False
+                _modellmass_uebernehmen(inputs)
+
             # Bei jeder Aenderung die berechneten Masse nachziehen. Die Liste
             # bewusst explizit: der Ordnerdialog und die Serienschalter
             # aendern nichts an der Geometrie.
@@ -1734,7 +1783,7 @@ class KlemmbausteinInputChangedHandler(adsk.core.InputChangedEventHandler):
                                 IN_KANTE_UNTEN, IN_KANTE_NOPPE, IN_ECKRADIUS,
                                 IN_KAL_KOPPELN, IN_KAL_X_SOLL, IN_KAL_X_IST,
                                 IN_KAL_Y_SOLL, IN_KAL_Y_IST, IN_KAL_Z_SOLL,
-                                IN_KAL_Z_IST, IN_KAL_RUND):
+                                IN_KAL_Z_IST, IN_KAL_RUND, IN_KAL_UEBERNEHMEN):
                 _aktualisiere_info(inputs)
 
         except Exception:

@@ -397,10 +397,21 @@ Du musst dafür **nichts in Prozent umrechnen** — du trägst einfach zwei Zahl
 ein, und das Add-In rechnet selbst:
 
 ```
-X Sollmaß   31,80 mm     ← was herauskommen sollte (steht in der Infozeile)
-X gemessen  31,73 mm     ← was dein Messschieber wirklich anzeigt
+X im Modell  31,80 mm     ← was im Modell steht (Zeile „Außenmaß")
+X gemessen   31,73 mm     ← was dein Messschieber wirklich anzeigt
 → Ergebnis: 0,221 % Vorhalt
 ```
+
+> **Wichtig beim zweiten Durchgang.** Das linke Feld will das Maß, das
+> **im Modell** steht — nicht das, was herauskommen soll. Beim ersten,
+> unkalibrierten Druck ist beides dasselbe. Sobald eine Kalibrierung wirkt,
+> baut Fusion größer: Aus 31,80 werden z. B. 31,86 mm. Trägst du dann wieder
+> 31,80 ein, wirfst du deinen bisherigen Vorhalt weg und korrigierst nur noch
+> den Rest — die Felder rechnen **nicht** aufeinander auf.
+>
+> Dafür gibt es den Knopf **„Modellmaß übernehmen"**: Er trägt die drei
+> aktuellen Modellmaße für dich ein. Ablauf beim Nachkalibrieren also:
+> drucken → Knopf drücken → gemessene Werte daneben eintragen.
 
 **Lässt du beide Felder einer Achse auf 0, bleibt diese Achse unverändert.**
 
