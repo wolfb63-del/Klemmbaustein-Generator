@@ -28,9 +28,9 @@ Marke der LEGO Gruppe; die Nennung dient allein der Beschreibung der
 Kompatibilitaet. Alle Masse basieren auf frei verfuegbaren, gemessenen
 Nennmassen des seit Jahrzehnten patentfreien Klemmbaustein-Rasters.
 
-Weitergabe kostenlos und unveraendert erlaubt. Die Nutzung erfolgt auf eigene
-Gefahr; eine Gewaehr fuer Masshaltigkeit, Eignung oder Druckergebnisse wird
-nicht uebernommen.
+Lizenziert unter der MIT-Lizenz, siehe LICENSE im Projektordner. Die Nutzung
+erfolgt auf eigene Gefahr; eine Gewaehr fuer Masshaltigkeit, Eignung oder
+Druckergebnisse wird nicht uebernommen.
 """
 
 import math

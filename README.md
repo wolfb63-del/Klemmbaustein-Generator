@@ -97,6 +97,6 @@ Kompatibilität.
 Alle Maße basieren auf frei verfügbaren, gemessenen Nennmaßen des seit
 Jahrzehnten patentfreien Klemmbaustein-Rasters.
 
-Weitergabe kostenlos und unverändert erlaubt. Die Nutzung erfolgt auf eigene
-Gefahr; eine Gewähr für Maßhaltigkeit, Eignung oder Druckergebnisse wird
-nicht übernommen.
+Lizenziert unter der MIT-Lizenz — siehe [LICENSE](LICENSE). Die Nutzung
+erfolgt auf eigene Gefahr; eine Gewähr für Maßhaltigkeit, Eignung oder
+Druckergebnisse wird nicht übernommen.

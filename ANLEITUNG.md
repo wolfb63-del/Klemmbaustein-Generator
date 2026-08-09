@@ -568,9 +568,10 @@ ausschließlich generische Grundformen ab — Stein, Platte, Fliese und
 Technic-Stein. Spezialteile, Figuren oder Set-spezifische Elemente sind
 bewusst **nicht** enthalten.
 
-**Weitergabe.** Kostenlos und unverändert erlaubt, gern zusammen mit dieser
-Anleitung. Verkauf oder kommerzielle Verwertung des Add-Ins ist nicht
-vorgesehen.
+**Weitergabe.** Das Add-In steht unter der MIT-Lizenz (siehe `LICENSE` im
+Projektordner): Nutzen, Ändern und Weitergeben sind frei, auch kommerziell,
+solange der Copyright-Vermerk erhalten bleibt. Über die Weitergabe zusammen
+mit dieser Anleitung freue ich mich.
 
 **Haftung.** Die Nutzung erfolgt auf eigene Gefahr. Eine Gewähr für
 Maßhaltigkeit, Eignung für einen bestimmten Zweck oder für Druckergebnisse wird

@@ -354,10 +354,11 @@ def seite():
         'Kompatibilit&auml;t.</p>',
         '<p>Alle Ma&szlig;e basieren auf frei verf&uuml;gbaren, gemessenen '
         'Nennma&szlig;en des seit Jahrzehnten patentfreien '
-        'Klemmbaustein-Rasters. Weitergabe kostenlos und unver&auml;ndert '
-        'erlaubt. Die Nutzung erfolgt auf eigene Gefahr; eine Gew&auml;hr '
-        'f&uuml;r Ma&szlig;haltigkeit, Eignung oder Druckergebnisse wird nicht '
-        '&uuml;bernommen.</p>',
+        'Klemmbaustein-Rasters. Das Add-In steht unter der MIT-Lizenz: '
+        'Nutzen, &Auml;ndern und Weitergeben sind frei, solange der '
+        'Copyright-Vermerk erhalten bleibt. Die Nutzung erfolgt auf eigene '
+        'Gefahr; eine Gew&auml;hr f&uuml;r Ma&szlig;haltigkeit, Eignung oder '
+        'Druckergebnisse wird nicht &uuml;bernommen.</p>',
     ])))
 
     navigation = ''.join(
