@@ -1,8 +1,10 @@
 # Klemmbaustein-Generator für Fusion — Anleitung
 
 Ein kostenloses Add-In für Autodesk Fusion, das klemmbaustein-kompatible Bauteile
-parametrisch erzeugt: **Stein, Platte, Fliese und Technic-Stein** in beliebiger
-Größe, mit Live-Vorschau, Druckprofilen und direktem STL-Export.
+parametrisch erzeugt: **vierzehn Bauteiltypen** — vom Standardstein über Platte,
+Fliese und Technic-Stein bis zu Schrägstein, Eckstein und Rundteilen — in
+beliebiger Größe, mit Live-Vorschau, Kantenbrechung, Druckerkalibrierung und
+direktem STL-Export.
 
 Kein Modellieren, kein Skizzieren: Typ wählen, Länge × Breite eintippen,
 "Erzeugen" — fertig ist der druckbare Körper.
@@ -13,7 +15,7 @@ Kein Modellieren, kein Skizzieren: Typ wählen, Länge × Breite eintippen,
 
 | Funktion | Details |
 |---|---|
-| Bauteiltypen | Stein (9,6 mm hoch), Platte (3,2 mm), Fliese (3,2 mm, ohne Noppen), Technic-Stein (Stein mit Querbohrungen) |
+| Bauteiltypen | 14 Stück: Stein, Halbstein, Platte, Fliese, Jumper-Platte, Technic-Stein, Technic-Lochbalken, Schrägstein, Schrägstein umgekehrt, Eckstein, Rundstein, Rundplatte, Rundfliese, Grundplatte (Übersicht in Abschnitt 5) |
 | Größe | 1 × 1 bis 32 × 32 Noppen, frei kombinierbar |
 | Unterseite | Ab 2×2 echte Röhren, bei 1×N schmale Stege — wie beim Original |
 | Live-Vorschau | Das Teil baut sich beim Tippen im Viewport auf |

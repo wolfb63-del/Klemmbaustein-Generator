@@ -221,9 +221,11 @@ def seite():
 
     # -- 3. Bauteiltypen ---------------------------------------------------
     teile.append(abschnitt(3, 'Die Bauteiltypen', ''.join([
-        '<p>Elf Typen, alle aus demselben Raster abgeleitet. Die Zeichnungen '
+        # Zahl aus der Typenliste, nicht ausgeschrieben: der Satz stand ein
+        # halbes Jahr auf "Elf", waehrend oben laengst 14 gezaehlt wurden.
+        '<p>{} Typen, alle aus demselben Raster abgeleitet. Die Zeichnungen '
         'zeigen die Draufsicht; gestrichelt, was an der Unterseite verdeckt '
-        'liegt.</p>',
+        'liegt.</p>'.format(len(K.TYPEN)),
         bauteiltypen(),
     ])))
 

@@ -703,6 +703,35 @@ class Justage(object):
 def baue_stein(design, typ, nx, ny, profil_name, y_versatz=0.0, klemm=None,
                ns=1, lage=None, justage=None, schenkel=1,
                bohrung=BOHRUNG_RUND):
+    """Baut den Stein und raeumt auf, wenn dabei etwas schiefgeht.
+
+    Scheitert ein Extrude mitten im Aufbau, bleibt sonst die halbfertige
+    Komponente im Dokument stehen - mit Grundkoerper, Hohlraum und allem, was
+    bis dahin geklappt hat. Weil die Vorschau bei jeder Eingabe neu laeuft,
+    sammeln sich bei einem dauerhaft fehlschlagenden Zustand binnen Sekunden
+    mehrere solcher Leichen im Browserbaum an.
+
+    Der Fehler selbst wird weitergereicht: Die Vorschau meldet ihn, und
+    stillschweigend ein halbes Teil zu liefern waere schlimmer.
+    """
+    root = design.rootComponent
+    vorher = root.occurrences.count
+    try:
+        return _baue_stein(design, typ, nx, ny, profil_name, y_versatz, klemm,
+                           ns, lage, justage, schenkel, bohrung)
+    except Exception:
+        try:
+            while root.occurrences.count > vorher:
+                root.occurrences.item(root.occurrences.count - 1).deleteMe()
+        except Exception:
+            # Das Aufraeumen darf den eigentlichen Fehler nicht verdecken.
+            pass
+        raise
+
+
+def _baue_stein(design, typ, nx, ny, profil_name, y_versatz=0.0, klemm=None,
+                ns=1, lage=None, justage=None, schenkel=1,
+               bohrung=BOHRUNG_RUND):
     """Baut den Baustein als neue Komponente. Gibt (Occurrence, BRepBody) zurueck.
 
     Der Ursprung der Komponente liegt in der unteren, vorderen, linken Ecke:
@@ -1398,6 +1427,28 @@ def _profil_uebernehmen(inputs, profil):
             feld.value = wert * MM
 
 
+def _uebernahme_werte(typ, nx, ny, profil_name, justage):
+    """Welche Werte der Knopf "Modellmass uebernehmen" eintragen wuerde.
+
+    Als eigene Funktion, weil hier der Fehler steckte, der sich real gezeigt
+    hat: Wird nur das Sollmass gesetzt, waechst der Faktor bei jedem Druck.
+    Eine Pruefung, die bloss die Formel danebenrechnet, faengt einen Rueckfall
+    nicht - sie muss diese Rechnung selbst durchlaufen.
+
+    Liefert je Achse (Feld-ID Soll, Feld-ID Ist, Modellmass, Faktor). Das
+    Istmass ergibt sich als Modellmass/Faktor und haelt den Faktor damit
+    konstant: der Knopf verschiebt nur die Bezugsgroesse.
+    """
+    p = PRINT_PROFILES[profil_name]
+    ny = nx if _ist_rund(typ) else ny
+    return ((IN_KAL_X_SOLL, IN_KAL_X_IST,
+             (nx * PITCH - p['gap']) * justage.fx, justage.fx),
+            (IN_KAL_Y_SOLL, IN_KAL_Y_IST,
+             (ny * PITCH - p['gap']) * justage.fy, justage.fy),
+            (IN_KAL_Z_SOLL, IN_KAL_Z_IST,
+             _hoehe(typ) * justage.fz, justage.fz))
+
+
 def _modellmass_uebernehmen(inputs):
     """Traegt die aktuellen Modellmasse in die drei Soll-Felder ein.
 
@@ -1419,13 +1470,8 @@ def _modellmass_uebernehmen(inputs):
     nur die Bezugsgroesse, und mehrfaches Druecken tut nichts.
     """
     cfg = Einstellungen(inputs)
-    p = PRINT_PROFILES[cfg.profil]
-    j = cfg.justage()
-    ny = cfg.nx if _ist_rund(cfg.typ) else cfg.ny
-    masse = ((IN_KAL_X_SOLL, IN_KAL_X_IST, (cfg.nx * PITCH - p['gap']) * j.fx, j.fx),
-             (IN_KAL_Y_SOLL, IN_KAL_Y_IST, (ny * PITCH - p['gap']) * j.fy, j.fy),
-             (IN_KAL_Z_SOLL, IN_KAL_Z_IST, _hoehe(cfg.typ) * j.fz, j.fz))
-    for ident_soll, ident_ist, modell, faktor in masse:
+    for ident_soll, ident_ist, modell, faktor in _uebernahme_werte(
+            cfg.typ, cfg.nx, cfg.ny, cfg.profil, cfg.justage()):
         f_soll = _finde(inputs, ident_soll)
         f_ist = _finde(inputs, ident_ist)
         if not f_soll or not f_ist:
@@ -1496,11 +1542,24 @@ class KlemmbausteinCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 adsk.core.DropDownStyles.TextListDropDownStyle)
             for name in TYPEN:
                 typ_dd.listItems.add(name, name == start_typ, '')
-            typ_dd.tooltip = ('Stein = 9,6 mm hoch, Platte = 3,2 mm hoch, '
-                              'Fliese = 3,2 mm ohne Noppen, '
-                              'Technic-Stein = Stein mit Querbohrungen, '
-                              'Jumper-Platte = Platte mit um ein halbes Raster '
-                              '(4 mm) versetzten Noppen.')
+            # Alle Typen, nicht nur die gelaeufigen: gerade die exotischen
+            # brauchen die Erklaerung schon beim Durchblaettern der Liste,
+            # nicht erst nach dem Auswaehlen.
+            typ_dd.tooltip = (
+                'Stein = 9,6 mm hoch  |  Halbstein = 4,8 mm, zwei ergeben '
+                'einen Stein  |  Platte = 3,2 mm, drei ergeben einen Stein  |  '
+                'Fliese = Platte ohne Noppen  |  Jumper-Platte = Noppen um ein '
+                'halbes Raster (4 mm) versetzt\n\n'
+                'Technic-Stein = Stein mit Querbohrungen  |  '
+                'Technic-Lochbalken = Querbohrungen ohne Noppen\n\n'
+                'Schraegstein = faellt zur Vorderkante ab, ergibt die '
+                'Dachflaeche  |  Schraegstein umgekehrt = derselbe Keil an der '
+                'Unterseite, schliesst die Dachkante von unten ab und behaelt '
+                'oben alle Noppen\n\n'
+                'Eckstein = L-Form, die Schenkelbreite ist einstellbar  |  '
+                'Rundstein = runder Grundriss, die Breite folgt der Laenge  |  '
+                'Rundplatte = flach mit Noppen  |  Rundfliese = flach und '
+                'glatt  |  Grundplatte = 1,6 mm massiv, klemmt nur von oben.')
 
             # --- Groesse ----------------------------------------------------
             laenge = inputs.addIntegerSpinnerCommandInput(
@@ -1644,6 +1703,18 @@ class KlemmbausteinCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 'wirklich gemessen - der Klemmkontakt liegt diagonal und vertraegt '
                 'kaum Unterschied zwischen den Achsen.')
 
+            # Vor den Messfeldern, nicht dahinter: wer von oben nach unten
+            # liest, haette sie sonst laengst von Hand ausgefuellt, bevor er
+            # den Knopf sieht, der genau das erledigt.
+            uebernehmen = kal_kinder.addBoolValueInput(
+                IN_KAL_UEBERNEHMEN, 'Modellmass uebernehmen', False, '', False)
+            uebernehmen.tooltip = (
+                'Traegt die aktuellen Modellmasse in die Felder "im Modell" '
+                'ein - genau das, was Fusion gerade baut.\n\n'
+                'Ablauf beim Nachkalibrieren: Teil drucken, hier druecken, '
+                'dann die gemessenen Werte daneben eintragen.\n\n'
+                'Achsen, deren beide Felder leer sind, bleiben unberuehrt.')
+
             def _messfeld(ident, beschriftung, schluessel):
                 feld = kal_kinder.addValueInput(
                     ident, beschriftung, 'mm',
@@ -1672,13 +1743,6 @@ class KlemmbausteinCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 'Breite.')
             _messfeld(IN_KAL_Z_IST, 'Z gemessen', 'kal_z_ist')
 
-            uebernehmen = kal_kinder.addBoolValueInput(
-                IN_KAL_UEBERNEHMEN, 'Modellmass uebernehmen', False, '', False)
-            uebernehmen.tooltip = (
-                'Traegt die aktuellen Modellmasse in die drei Felder "im '
-                'Modell" ein - genau das, was Fusion gerade baut.\n\n'
-                'Ablauf beim Nachkalibrieren: Teil drucken, hier druecken, '
-                'dann die gemessenen Werte daneben eintragen.')
 
             rund_in = kal_kinder.addValueInput(
                 IN_KAL_RUND, 'Rundungs-Aufmass', 'mm',

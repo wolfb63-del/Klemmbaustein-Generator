@@ -570,15 +570,25 @@ print('\n--- Modellmass uebernehmen darf sich nicht hochschaukeln ---')
 # Der Knopf setzt Soll auf das Modellmass. Wanderte das Istmass nicht im
 # selben Verhaeltnis mit, waechst der Faktor bei jedem Druck weiter - genau
 # so gemeldet am 2026-08-09 (aus 0,283 % wurden 0,663 %).
+#
+# Die Pruefung ruft _uebernahme_werte selbst auf, statt die Formel daneben
+# nachzurechnen - sonst liefe sie an einem Rueckfall vorbei.
 soll, ist = 31.80, 31.74
 for runde in range(5):
-    f = K._faktor(soll, ist)
-    modell = 31.80 * f
-    soll, ist = modell, modell / f      # das macht der Knopf
+    j = K.Justage(fx=K._faktor(soll, ist), fy=K._faktor(soll, ist))
+    werte = K._uebernahme_werte(K.TYP_STEIN, 4, 2, 'PLA (0,2 mm Schicht)', j)
+    _, _, modell, faktor = werte[0]          # X-Achse
+    soll, ist = modell, modell / faktor      # das macht der Knopf
 pruefe('Faktor bleibt nach fuenf Druecken stehen',
        round(K._faktor(soll, ist), 9), round(K._faktor(31.80, 31.74), 9))
 pruefe('Modellmass bleibt stehen', round(31.80 * K._faktor(soll, ist), 4),
        round(31.80 * K._faktor(31.80, 31.74), 4))
+pruefe('Uebernahme liefert alle drei Achsen', len(werte), 3)
+pruefe('Rundstein nimmt die Laenge auch fuer die Breite',
+       K._uebernahme_werte(K.TYP_RUND, 4, 9, 'PLA (0,2 mm Schicht)',
+                           K.Justage())[1][2],
+       K._uebernahme_werte(K.TYP_RUND, 4, 9, 'PLA (0,2 mm Schicht)',
+                           K.Justage())[0][2])
 
 # Und danach greift ein frisch gemessener Wert richtig: Bezug ist das
 # Modellmass, nicht mehr das Nennmass.
