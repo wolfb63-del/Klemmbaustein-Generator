@@ -566,6 +566,26 @@ pruefe('Skalierung laesst die Klemmung fast unberuehrt',
 pruefe('Rundungs-Aufmass macht es dagegen strammer',
        'stramm' in klemmrest(K.Justage(rund=0.23)), True)
 
+print('\n--- Modellmass uebernehmen darf sich nicht hochschaukeln ---')
+# Der Knopf setzt Soll auf das Modellmass. Wanderte das Istmass nicht im
+# selben Verhaeltnis mit, waechst der Faktor bei jedem Druck weiter - genau
+# so gemeldet am 2026-08-09 (aus 0,283 % wurden 0,663 %).
+soll, ist = 31.80, 31.74
+for runde in range(5):
+    f = K._faktor(soll, ist)
+    modell = 31.80 * f
+    soll, ist = modell, modell / f      # das macht der Knopf
+pruefe('Faktor bleibt nach fuenf Druecken stehen',
+       round(K._faktor(soll, ist), 9), round(K._faktor(31.80, 31.74), 9))
+pruefe('Modellmass bleibt stehen', round(31.80 * K._faktor(soll, ist), 4),
+       round(31.80 * K._faktor(31.80, 31.74), 4))
+
+# Und danach greift ein frisch gemessener Wert richtig: Bezug ist das
+# Modellmass, nicht mehr das Nennmass.
+soll_neu = 31.80 * K._faktor(31.80, 31.74)
+pruefe('neue Messung rechnet auf dem Modellmass weiter',
+       round((K._faktor(soll_neu, 31.77) - 1.0) * 100.0, 3), 0.284)
+
 print('\n' + '=' * 70)
 if fehler:
     print('FEHLGESCHLAGEN: {}'.format(len(fehler)))

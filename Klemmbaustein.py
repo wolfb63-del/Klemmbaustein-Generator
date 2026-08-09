@@ -1391,18 +1391,30 @@ def _modellmass_uebernehmen(inputs):
     Bewusst nur auf Knopfdruck und nicht automatisch: gemessen wird oft an
     einem anderen Teil als dem gerade eingestellten, und ein stilles
     Ueberschreiben der Referenz waere schlimmer als eine Handeingabe.
+
+    Beide Felder werden gesetzt, nicht nur das linke - sonst schaukelt sich
+    der Knopf hoch: Das neue Sollmass enthaelt bereits den geltenden Faktor,
+    das alte Istmass stammt aber noch vom Druck davor. Aus dem Paar wuerde
+    ein groesserer Faktor, daraus beim naechsten Druck ein noch groesseres
+    Modellmass, und so fort. Indem das Istmass im selben Verhaeltnis
+    mitwandert, bleibt der Faktor exakt, wo er war: Der Knopf aendert dann
+    nur die Bezugsgroesse, und mehrfaches Druecken tut nichts.
     """
     cfg = Einstellungen(inputs)
     p = PRINT_PROFILES[cfg.profil]
     j = cfg.justage()
     ny = cfg.nx if _ist_rund(cfg.typ) else cfg.ny
-    masse = ((IN_KAL_X_SOLL, (cfg.nx * PITCH - p['gap']) * j.fx),
-             (IN_KAL_Y_SOLL, (ny * PITCH - p['gap']) * j.fy),
-             (IN_KAL_Z_SOLL, _hoehe(cfg.typ) * j.fz))
-    for ident, wert in masse:
-        feld = _finde(inputs, ident)
-        if feld:
-            feld.value = wert * MM
+    masse = ((IN_KAL_X_SOLL, IN_KAL_X_IST, (cfg.nx * PITCH - p['gap']) * j.fx, j.fx),
+             (IN_KAL_Y_SOLL, IN_KAL_Y_IST, (ny * PITCH - p['gap']) * j.fy, j.fy),
+             (IN_KAL_Z_SOLL, IN_KAL_Z_IST, _hoehe(cfg.typ) * j.fz, j.fz))
+    for ident_soll, ident_ist, modell, faktor in masse:
+        f_soll = _finde(inputs, ident_soll)
+        f_ist = _finde(inputs, ident_ist)
+        if not f_soll or not f_ist:
+            continue
+        f_soll.value = modell * MM
+        # faktor ist nie 0: _faktor liefert bei leeren Feldern 1,0.
+        f_ist.value = modell / faktor * MM
 
 
 def _sichtbarkeit(inputs):
