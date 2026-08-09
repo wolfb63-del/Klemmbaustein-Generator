@@ -308,33 +308,57 @@ def seite():
 
     # -- 8. Kalibrierung ---------------------------------------------------
     teile.append(abschnitt(8, 'Den Drucker kalibrieren', ''.join([
-        '<p>Nicht Prozente eintippen, sondern messen. Zwei Zahlen je Achse:</p>',
-        '<pre class="eingabe">X Sollma&szlig;   31,80 mm   &larr; was laut '
-        'Infozeile herauskommen soll\nX gemessen  31,73 mm   &larr; was der '
-        'Messschieber sagt\n&rarr; Ergebnis: {} % Vorhalt</pre>'.format(
+        '<p>Male einen Kreis mit einem dicken Filzstift nach: Dein Kreis wird '
+        'nie genau so gro&szlig; wie die Vorlage &ndash; der Stift ist eben '
+        'dick. Ein 3D-Drucker macht dasselbe. Bei einem Klemmbaustein f&auml;llt '
+        'das auf, denn ob er h&auml;lt, entscheidet sich in hundertstel '
+        'Millimetern &ndash; d&uuml;nner als ein Haar.</p>',
+        '<p>Die gute Nachricht: Dein Drucker macht diesen Fehler immer gleich. '
+        'Einmal ausmessen, eintragen, fertig. Du musst dabei <b>nichts in '
+        'Prozent umrechnen</b> &ndash; du tr&auml;gst zwei Zahlen ein, das '
+        'Add-In rechnet selbst:</p>',
+        '<pre class="eingabe">X Sollma&szlig;   31,80 mm   &larr; was '
+        'herauskommen sollte (steht in der Infozeile)\nX gemessen  31,73 mm   '
+        '&larr; was dein Messschieber wirklich anzeigt\n&rarr; Ergebnis: '
+        '{} % Vorhalt</pre>'.format(
             de((K._faktor(31.8, 31.73) - 1.0) * 100.0, 3)),
-        '<p><b>Beide Felder einer Achse leer (0) = nicht kalibriert.</b></p>',
-        '<h3>Zwei verschiedene Fehler</h3>',
-        tabelle(['Fehlerart', 'Verhalten', 'Werkzeug'], [
-            ['Schrumpf', 'w&auml;chst mit dem Ma&szlig; (31,73 statt 31,80 '
-             '= 0,22 %)', 'Soll / Gemessen'],
-            ['D&uuml;senversatz', 'ist eine Konstante (Noppe 4,56 statt 4,80 '
-             '= &minus;0,24 mm)', 'Rundungs-Aufma&szlig;'],
+        '<p><b>L&auml;sst du beide Felder einer Achse auf 0, bleibt diese '
+        'Achse unver&auml;ndert.</b></p>',
+        '<h3>Es gibt zwei Sorten Fehler</h3>',
+        '<p>Das ist der wichtigste Gedanke hier. Geht etwas schief, kann das '
+        'zwei ganz verschiedene Gr&uuml;nde haben &ndash; und jeder braucht '
+        'sein eigenes Gegenmittel.</p>',
+        tabelle(['Sorte', 'Verhalten', 'Das richtige Feld'], [
+            ['<b>Schrumpf</b><br/><span class="bild">Pullover in der '
+             'W&auml;sche</span>',
+             'w&auml;chst mit dem Ma&szlig;: der l&auml;ngere &Auml;rmel geht '
+             'st&auml;rker ein als der Kragen (31,73 statt 31,80 = 0,22 %)',
+             'Soll / Gemessen'],
+            ['<b>D&uuml;senversatz</b><br/><span class="bild">dicker '
+             'Filzstift</span>',
+             'immer derselbe Betrag, egal wie gro&szlig; das Teil ist '
+             '(Noppe 4,56 statt 4,80 = &minus;0,24 mm)',
+             'Rundungs-Aufma&szlig;'],
         ]),
         hinweis(
-            'Beim Testdruck lag die Noppe <b>0,24 mm</b> daneben, nicht '
-            '5 Prozent. So etwas f&auml;ngt kein Faktor ab &ndash; deshalb '
-            'gibt es beide Felder. Und immer am gro&szlig;en Teil messen: an '
-            'kleinen Ma&szlig;en &uuml;berwiegt der konstante Fehler.'),
+            'Beim Testdruck fehlten an der Noppe <b>0,24 mm</b> &ndash; als '
+            'fester Betrag, nicht als Prozentwert. W&uuml;rdest du das mit '
+            'Prozenten wegrechnen, w&auml;ren es an der kleinen Noppe ganze '
+            '5 Prozent &ndash; und der ganze Stein w&uuml;rde viel zu '
+            'gro&szlig;. Deshalb zwei Felder. Und immer am gro&szlig;en Teil '
+            'messen: an kleinen Ma&szlig;en f&auml;llt der feste Fehler zu '
+            'stark ins Gewicht.'),
         '<h3>X und Y</h3>',
-        '<p>Der Klemmkontakt liegt diagonal und hat nur 0,002 mm Reserve. '
-        'Laufen die Achsen auseinander, m&uuml;sste die Noppe elliptisch '
-        'werden, um zu folgen &ndash; ab {} % Differenz warnt die '
+        '<p>Noppe und R&ouml;hre ber&uuml;hren sich &uuml;ber Eck, und dort '
+        'ist nur 0,002 mm Platz. Behandelst du die beiden Richtungen '
+        'unterschiedlich, m&uuml;sste die Noppe oval werden, um noch zu passen '
+        '&ndash; das kann sie nicht. Ab {} % Unterschied warnt die '
         'Infozeile.</p>'.format(de(K.FAKTOR_DIFF_WARNUNG * 100, 2)),
-        '<h3>Warum Z anders ist</h3>',
-        '<p>Die H&ouml;he ist Schichtzahl mal Schichth&ouml;he. Der Slicer '
-        'rundet auf ganze Schichten &ndash; kein Faktor holt das zur&uuml;ck. '
-        'Eine Schichth&ouml;he w&auml;hlen, die {} mm teilt:</p>'.format(
+        '<h3>Warum die H&ouml;he ein Sonderfall ist</h3>',
+        '<p>Der Drucker arbeitet in Schichten &ndash; wie ein Stapel Papier. '
+        'Du kannst nur ganze Bl&auml;tter stapeln, keine halben. Ein Faktor '
+        'hilft da wenig. W&auml;hle stattdessen eine Schichth&ouml;he, mit der '
+        '{} mm glatt aufgeht:</p>'.format(
             de(K.PLATE_H)),
         tabelle(['Schichth&ouml;he', 'Schichten f&uuml;r {} mm'.format(
             de(K.PLATE_H)), 'Ergebnis'],
@@ -378,90 +402,138 @@ VORLAGE = u"""<!doctype html>
 <title>Klemmbaustein-Generator – Anleitung</title>
 <style>
 :root {{
-  --grund: #fbfcfd;
+  --grund: #ffffff;
   --karte: #ffffff;
-  --text: #2e3440;
-  --leise: #5b6878;
-  --linie: #dde3ea;
-  --akzent: #3b5478;
-  --warn-rand: #bf616a;
-  --warn-flaeche: #fdf3f4;
-  --info-rand: #5e81ac;
-  --info-flaeche: #f2f6fb;
-  --radius: 10px;
+  --flaeche: #f5f5f7;
+  --text: #1d1d1f;
+  --leise: #6e6e73;
+  --linie: #e5e5ea;
+  --akzent: #0071e3;
+  --ton: #0071e3;
+  --warn-rand: #ff9f0a;
+  --warn-flaeche: #fff8ed;
+  --info-rand: #0071e3;
+  --info-flaeche: #f0f7ff;
+  --radius: 18px;
+  --schatten: 0 1px 2px rgba(0,0,0,.04), 0 10px 30px rgba(0,0,0,.06);
 }}
+/* Jedes Kapitel bekommt seine eigene Farbe. Das macht die Seite freundlicher
+   und hilft beim Wiederfinden: Kapitel 6 ist "das gruene", nicht "das
+   sechste von oben". Die Toene sind Apples Systemfarben. */
+main > section:nth-of-type(1) {{ --ton: #0071e3; }}
+main > section:nth-of-type(2) {{ --ton: #00a3a3; }}
+main > section:nth-of-type(3) {{ --ton: #8b5cf6; }}
+main > section:nth-of-type(4) {{ --ton: #e8590c; }}
+main > section:nth-of-type(5) {{ --ton: #d6336c; }}
+main > section:nth-of-type(6) {{ --ton: #2f9e44; }}
+main > section:nth-of-type(7) {{ --ton: #4c6ef5; }}
+main > section:nth-of-type(8) {{ --ton: #c2255c; }}
+main > section:nth-of-type(9) {{ --ton: #7048e8; }}
 @media (prefers-color-scheme: dark) {{
   :root {{
-    --grund: #22272e;
-    --karte: #2b313a;
-    --text: #e6eaf0;
-    --leise: #a7b2c0;
-    --linie: #3a424e;
-    --akzent: #9dbbe0;
-    --warn-flaeche: #3a2c2e;
-    --info-flaeche: #2a323d;
+    --grund: #000000;
+    --karte: #1c1c1e;
+    --flaeche: #1c1c1e;
+    --text: #f5f5f7;
+    --leise: #a1a1a6;
+    --linie: #2c2c2e;
+    --akzent: #0a84ff;
+    --warn-flaeche: #2e2415;
+    --info-flaeche: #10243b;
   }}
-}}
-:root[data-theme="dark"] {{
-  --grund: #22272e; --karte: #2b313a; --text: #e6eaf0; --leise: #a7b2c0;
-  --linie: #3a424e; --akzent: #9dbbe0; --warn-flaeche: #3a2c2e;
-  --info-flaeche: #2a323d;
-}}
-:root[data-theme="light"] {{
-  --grund: #fbfcfd; --karte: #ffffff; --text: #2e3440; --leise: #5b6878;
-  --linie: #dde3ea; --akzent: #3b5478; --warn-flaeche: #fdf3f4;
-  --info-flaeche: #f2f6fb;
+  main > section:nth-of-type(1) {{ --ton: #0a84ff; }}
+  main > section:nth-of-type(2) {{ --ton: #40c8c8; }}
+  main > section:nth-of-type(3) {{ --ton: #bf5af2; }}
+  main > section:nth-of-type(4) {{ --ton: #ff9f0a; }}
+  main > section:nth-of-type(5) {{ --ton: #ff62a5; }}
+  main > section:nth-of-type(6) {{ --ton: #30d158; }}
+  main > section:nth-of-type(7) {{ --ton: #5e9eff; }}
+  main > section:nth-of-type(8) {{ --ton: #ff6b9d; }}
+  main > section:nth-of-type(9) {{ --ton: #a78bfa; }}
 }}
 * {{ box-sizing: border-box; }}
 body {{
   margin: 0; background: var(--grund); color: var(--text);
-  font: 16px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif;
+  font: 17px/1.7 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui,
+        "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
 }}
+/* Der Kopf traegt die Farbe der Seite, ohne laut zu werden: ein weicher
+   Verlauf, der nach unten ins Weiss auslaeuft. */
 header {{
-  padding: 3.5rem 1.5rem 2.5rem; text-align: center;
-  border-bottom: 1px solid var(--linie);
+  padding: 5.5rem 1.5rem 4rem; text-align: center; position: relative;
+  background:
+    radial-gradient(60rem 22rem at 30% -8rem, #dbeafe 0%, transparent 60%),
+    radial-gradient(50rem 20rem at 78% -4rem, #fce7f3 0%, transparent 62%),
+    var(--grund);
 }}
-header h1 {{ margin: 0 0 .4rem; font-size: clamp(1.7rem, 1.1rem + 2.4vw, 2.6rem);
-  letter-spacing: -.02em; }}
-header p {{ margin: 0; color: var(--leise); }}
+@media (prefers-color-scheme: dark) {{
+  header {{
+    background:
+      radial-gradient(60rem 22rem at 30% -8rem, #10243b 0%, transparent 60%),
+      radial-gradient(50rem 20rem at 78% -4rem, #2b1430 0%, transparent 62%),
+      var(--grund);
+  }}
+}}
+header h1 {{
+  margin: 0 0 .8rem; font-size: clamp(2.2rem, 1.2rem + 4vw, 4rem);
+  letter-spacing: -.035em; line-height: 1.05; font-weight: 700;
+  background: linear-gradient(96deg, #0071e3 0%, #8b5cf6 46%, #d6336c 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}}
+header p {{
+  margin: 0 auto; max-width: 34rem; color: var(--leise);
+  font-size: clamp(1rem, .9rem + .4vw, 1.2rem);
+}}
 nav {{
   position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap;
-  gap: .2rem; justify-content: center; padding: .6rem 1rem;
-  background: color-mix(in srgb, var(--grund) 92%, transparent);
-  backdrop-filter: blur(8px); border-bottom: 1px solid var(--linie);
+  gap: .25rem; justify-content: center; padding: .7rem 1rem;
+  background: color-mix(in srgb, var(--grund) 78%, transparent);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--linie);
 }}
 nav a {{
-  color: var(--leise); text-decoration: none; font-size: .82rem;
-  padding: .3rem .6rem; border-radius: 99px;
+  color: var(--leise); text-decoration: none; font-size: .84rem;
+  padding: .38rem .8rem; border-radius: 99px; font-weight: 500;
+  transition: background .18s ease, color .18s ease;
 }}
-nav a:hover {{ color: var(--text); background: var(--linie); }}
-main {{ max-width: 62rem; margin: 0 auto; padding: 2.5rem 1.25rem 5rem; }}
-section {{ margin-bottom: 3.5rem; scroll-margin-top: 4rem; }}
+nav a:hover {{ color: #fff; background: var(--akzent); }}
+main {{ max-width: 58rem; margin: 0 auto; padding: 3.5rem 1.25rem 6rem; }}
+section {{ margin-bottom: 5rem; scroll-margin-top: 4.5rem; }}
 h2 {{
-  display: flex; align-items: baseline; gap: .7rem; font-size: 1.45rem;
-  letter-spacing: -.01em; padding-bottom: .5rem;
-  border-bottom: 2px solid var(--linie); margin-bottom: 1.3rem;
+  display: flex; align-items: center; gap: .85rem;
+  font-size: clamp(1.5rem, 1.2rem + 1.1vw, 2rem);
+  letter-spacing: -.025em; font-weight: 700; margin-bottom: 1.6rem;
 }}
 h2 .nr {{
-  font-size: .8rem; color: var(--akzent); font-variant-numeric: tabular-nums;
-  border: 1px solid var(--akzent); border-radius: 99px;
-  width: 1.7rem; height: 1.7rem; display: inline-flex;
+  font-size: .95rem; font-weight: 700; color: #fff;
+  font-variant-numeric: tabular-nums;
+  background: var(--ton); border-radius: 99px;
+  width: 2.2rem; height: 2.2rem; display: inline-flex;
   align-items: center; justify-content: center; flex: none;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--ton) 40%, transparent);
 }}
-h3 {{ font-size: 1.05rem; margin: 1.8rem 0 .6rem; }}
-p {{ margin: 0 0 1rem; }}
-.vorspann {{ font-size: 1.08rem; color: var(--leise); }}
+h3 {{
+  font-size: 1.15rem; margin: 2.2rem 0 .7rem; letter-spacing: -.015em;
+  font-weight: 600; color: var(--ton);
+}}
+p {{ margin: 0 0 1.1rem; }}
+b {{ font-weight: 600; }}
+.vorspann {{
+  font-size: 1.15rem; color: var(--leise); letter-spacing: -.01em;
+  max-width: 44rem;
+}}
 figure {{ margin: 1.5rem 0; }}
 /* Technische Zeichnungen bleiben in beiden Themes auf hellem Grund. Die
    Bemassung und die Kantenfarben sind auf Papier hin entworfen; auf
    dunklem Untergrund verschwaende der dunkle Text schlicht. */
 .zeichnung {{
   background: #ffffff; border: 1px solid var(--linie);
-  border-radius: var(--radius); padding: 1.1rem; display: flex;
-  justify-content: center; overflow-x: auto;
+  border-radius: var(--radius); padding: 1.4rem; display: flex;
+  justify-content: center; overflow-x: auto; box-shadow: var(--schatten);
 }}
 figcaption {{
-  margin-top: .55rem; font-size: .85rem; color: var(--leise);
+  margin-top: .7rem; font-size: .86rem; color: var(--leise);
   text-align: center;
 }}
 .paar {{ display: grid; gap: 1.2rem; grid-template-columns: 1fr; }}
@@ -473,43 +545,68 @@ figcaption {{
 .typ {{
   display: grid; grid-template-columns: 1fr; gap: .9rem;
   background: var(--karte); border: 1px solid var(--linie);
-  border-radius: var(--radius); padding: 1rem;
+  border-radius: var(--radius); padding: 1.2rem;
+  box-shadow: var(--schatten);
+  transition: transform .2s ease, box-shadow .2s ease;
+}}
+.typ:hover {{
+  transform: translateY(-3px);
+  box-shadow: 0 2px 4px rgba(0,0,0,.05), 0 18px 40px rgba(0,0,0,.10);
 }}
 /* Feste Bildhoehe je Karte: die Motive sind unterschiedlich proportioniert
    (ein 1x2-Jumper ist hoch und schmal, ein 4x2-Stein breit und flach). Ohne
    gemeinsame Hoehe wuerden die Karten im Raster unterschiedlich hoch. */
 .typ .zeichnung {{ padding: .6rem; height: 11rem; align-items: center; }}
 .typ .zeichnung svg {{ width: auto; height: auto; max-height: 100%; }}
-.typ h3 {{ margin: 0 0 .35rem; font-size: 1rem; }}
-.typ p {{ margin: 0 0 .7rem; font-size: .88rem; color: var(--leise); }}
-.typ dl {{ margin: 0; display: grid; gap: .15rem .8rem; font-size: .82rem; }}
+.typ h3 {{ margin: 0 0 .35rem; font-size: 1.05rem; color: var(--ton); }}
+.typ p {{ margin: 0 0 .7rem; font-size: .9rem; color: var(--leise); }}
+.typ dl {{ margin: 0; display: grid; gap: .15rem .8rem; font-size: .84rem; }}
 .typ dl div {{ display: flex; gap: .5rem; justify-content: space-between;
-  border-top: 1px dotted var(--linie); padding-top: .2rem; }}
+  border-top: 1px solid var(--linie); padding-top: .3rem; }}
 .typ dt {{ color: var(--leise); }}
-.typ dd {{ margin: 0; font-variant-numeric: tabular-nums; }}
-.tabelle {{ overflow-x: auto; margin: 1.1rem 0; }}
-table {{ border-collapse: collapse; width: 100%; font-size: .9rem;
-  min-width: 22rem; }}
-th, td {{ text-align: left; padding: .5rem .7rem;
-  border-bottom: 1px solid var(--linie); vertical-align: top; }}
-th {{ font-size: .78rem; text-transform: uppercase; letter-spacing: .04em;
-  color: var(--leise); font-weight: 600; }}
-td:not(:first-child) {{ font-variant-numeric: tabular-nums; }}
-.hinweis {{
-  border-left: 3px solid var(--info-rand); background: var(--info-flaeche);
-  padding: .85rem 1rem; border-radius: 0 var(--radius) var(--radius) 0;
-  margin: 1.1rem 0; font-size: .92rem;
+.typ dd {{ margin: 0; font-variant-numeric: tabular-nums; font-weight: 500; }}
+.tabelle {{
+  overflow-x: auto; margin: 1.4rem 0; border-radius: var(--radius);
+  border: 1px solid var(--linie); background: var(--karte);
+  box-shadow: var(--schatten);
 }}
-.hinweis.warnung {{ border-left-color: var(--warn-rand);
-  background: var(--warn-flaeche); }}
+table {{ border-collapse: collapse; width: 100%; font-size: .92rem;
+  min-width: 22rem; }}
+th, td {{ text-align: left; padding: .8rem 1rem;
+  border-bottom: 1px solid var(--linie); vertical-align: top; }}
+tr:last-child td {{ border-bottom: none; }}
+th {{
+  font-size: .74rem; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--ton); font-weight: 700;
+  background: color-mix(in srgb, var(--ton) 7%, transparent);
+}}
+td:not(:first-child) {{ font-variant-numeric: tabular-nums; }}
+/* Der Alltagsvergleich unter einem Fachbegriff - leiser als dieser, damit
+   klar ist, was Begriff und was Eselsbruecke ist. */
+.bild {{ color: var(--leise); font-size: .86em; font-weight: 400; }}
+/* Hinweise sind bewusst weich und rundum gefasst statt als harter Balken -
+   auf der Seite sollen sie wie ein freundlicher Zuruf wirken, nicht wie
+   eine Fehlermeldung. */
+.hinweis {{
+  background: var(--info-flaeche); border: 1px solid
+    color-mix(in srgb, var(--info-rand) 22%, transparent);
+  padding: 1.1rem 1.3rem; border-radius: var(--radius);
+  margin: 1.4rem 0; font-size: .95rem;
+}}
+.hinweis.warnung {{
+  background: var(--warn-flaeche);
+  border-color: color-mix(in srgb, var(--warn-rand) 30%, transparent);
+}}
 pre.eingabe {{
-  background: var(--karte); border: 1px solid var(--linie);
-  border-radius: var(--radius); padding: 1rem; overflow-x: auto;
-  font-size: .85rem; line-height: 1.6;
+  background: var(--flaeche); border: 1px solid var(--linie);
+  border-radius: var(--radius); padding: 1.2rem 1.4rem; overflow-x: auto;
+  font-size: .88rem; line-height: 1.75;
+  font-family: "SF Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
 }}
 footer {{
-  border-top: 1px solid var(--linie); padding: 2rem 1.25rem 3rem;
-  text-align: center; color: var(--leise); font-size: .85rem;
+  border-top: 1px solid var(--linie); padding: 3rem 1.25rem 4rem;
+  text-align: center; color: var(--leise); font-size: .86rem;
+  background: var(--flaeche);
 }}
 </style>
 </head>

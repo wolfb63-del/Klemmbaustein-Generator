@@ -349,43 +349,47 @@ nur eben mit scharfer Kante an dieser Stelle.
 
 ### Gruppe "Druckerkalibrierung"
 
-Hier trägst du ein, was dein Drucker aus den Sollmaßen wirklich macht.
-Du gibst **keine Prozente** ein, sondern misst und trägst zwei Zahlen ein:
+Hier sagst du dem Add-In, was dein Drucker aus den Sollmaßen wirklich macht.
+Du musst dafür **nichts in Prozent umrechnen** — du trägst einfach zwei Zahlen
+ein, und das Add-In rechnet selbst:
 
 ```
-X Sollmaß   31,80 mm     ← was laut Infozeile herauskommen soll
-X gemessen  31,73 mm     ← was der Messschieber sagt
+X Sollmaß   31,80 mm     ← was herauskommen sollte (steht in der Infozeile)
+X gemessen  31,73 mm     ← was dein Messschieber wirklich anzeigt
 → Ergebnis: 0,221 % Vorhalt
 ```
 
-**Beide Felder einer Achse leer (0) = diese Achse ist nicht kalibriert.**
+**Lässt du beide Felder einer Achse auf 0, bleibt diese Achse unverändert.**
 
-* **X und Y koppeln** — übernimmt den X-Faktor auch für Y. Standardmäßig an.
-  Getrennte Achsen nur, wenn du wirklich beide gemessen hast: der Klemmkontakt
-  liegt **diagonal** zwischen Noppe und Röhre und hat nur 0,002 mm Reserve.
-  Laufen X und Y auseinander, müsste die Noppe elliptisch werden, um zu folgen —
-  ab 0,15 % Differenz warnt die Infozeile.
-* **Rundungs-Aufmaß** — absolutes Aufmaß auf Noppen, Stege und Röhrenaußenseite.
+* **X und Y koppeln** — nimmt deinen X-Wert auch für Y. Lass das an, solange du
+  nicht wirklich beide Richtungen gemessen hast. Grund: Noppe und Röhre
+  berühren sich **über Eck**, und dort ist nur 0,002 mm Platz. Behandelst du
+  die beiden Richtungen unterschiedlich, müsste die Noppe oval werden, um noch
+  zu passen — das kann sie nicht. Ab 0,15 % Unterschied warnt die Infozeile.
+* **Rundungs-Aufmaß** — hier kommt der Filzstift-Fehler aus Abschnitt 6 hinein:
+  ein fester Betrag, der auf Noppen, Stege und Röhrenaußenseiten draufkommt.
 
-> **Warum zwei verschiedene Felder?** Weil es zwei verschiedene Fehler gibt:
+> **Warum es zwei Felder gibt** — weil es zwei Sorten Fehler gibt, die sich
+> ganz unterschiedlich verhalten:
 >
-> | Fehlerart | Verhalten | Werkzeug |
+> | Sorte | Verhalten | Das richtige Feld |
 > |-----------|-----------|----------|
-> | **Schrumpf** | wächst mit dem Maß (31,73 statt 31,80 = 0,22 %) | Soll/Gemessen |
-> | **Düsenversatz** | ist eine Konstante (Noppe 4,56 statt 4,80 = −0,24 mm) | Rundungs-Aufmaß |
+> | **Schrumpf** (Pullover in der Wäsche) | wächst mit dem Maß: 31,73 statt 31,80 = 0,22 % | Soll / Gemessen |
+> | **Düsenversatz** (dicker Filzstift) | immer derselbe Betrag: Noppe 4,56 statt 4,80 = −0,24 mm | Rundungs-Aufmaß |
 >
-> Beim Testdruck vom 03.08.2026 lag die Noppe **0,24 mm** daneben, nicht
-> 5 Prozent. So etwas fängt kein Faktor ab — dafür ist das Rundungs-Aufmaß da.
+> Beim Testdruck vom 03.08.2026 fehlten an der Noppe **0,24 mm** — und zwar als
+> fester Betrag, nicht als Prozentwert. Genau dafür gibt es das zweite Feld.
 
-**Messen möglichst an einem großen Teil** (8×2 oder größer). An kleinen Maßen
-überwiegt der konstante Düsenfehler, und daraus wird ein falscher Prozentwert,
-der bei großen Steinen dann kräftig danebenliegt.
+**Miss möglichst an einem großen Teil** (8×2 oder größer). Bei einem kleinen
+Stein fällt der feste Filzstift-Fehler stark ins Gewicht, und wenn du daraus
+einen Prozentwert machst, liegt der bei großen Steinen weit daneben.
 
-> **Zur Z-Achse:** Ein Faktor hilft dort nur begrenzt. Die Höhe ist
-> Schichtzahl × Schichthöhe — der Slicer rundet auf ganze Schichten.
-> Wähle eine Schichthöhe, die **3,2 mm teilt**: 0,10 / 0,16 / 0,20 / 0,32.
-> Bei 0,15 mm ergeben sich 21,33 Schichten für eine Platte, daraus macht der
-> Slicer 3,15 oder 3,30 mm — und kein Faktor holt das zurück.
+> **Die Höhe (Z) ist ein Sonderfall.** Sie lässt sich kaum über einen Faktor
+> korrigieren, weil der Drucker in Schichten arbeitet — wie ein Stapel Papier.
+> Du kannst nur ganze Blätter stapeln, keine halben. Wähle deshalb eine
+> Schichthöhe, mit der **3,2 mm glatt aufgeht**: 0,10 / 0,16 / 0,20 / 0,32 mm.
+> Bei 0,15 mm bräuchte eine Platte 21,33 Schichten — die gibt es nicht, also
+> macht der Drucker 3,15 oder 3,30 mm daraus, und kein Faktor holt das zurück.
 
 **Wechselst du das Druckprofil**, werden die Kalibrierfelder mit den Werten des
 Profils neu gefüllt (auch mit Nullen). Danach gewinnen deine eigenen Zahlen —
@@ -425,21 +429,39 @@ Damit bleiben Kalibrierdrucke auch nach Wochen noch auseinanderzuhalten.
 
 ## 6. Der wichtigste Schritt: einmal kalibrieren
 
-Ein Klemmbaustein steht und fällt mit **hundertstel Millimetern**. Kein Drucker
-trifft die Nennmaße auf Anhieb. Deshalb einmal diese Runde drehen — danach passt
-alles dauerhaft:
+### Worum es hier überhaupt geht
 
-### Schritt 1 — Referenzdruck
+Stell dir vor, du malst einen Kreis mit einem dicken Filzstift nach. Dein Kreis
+wird nie genau so groß wie die Vorlage — der Stift ist eben dick. Ein 3D-Drucker
+macht dasselbe: Er drückt weichen Kunststoff durch eine Düse, und der landet nie
+haargenau auf der gedachten Linie.
 
-Einen **4×2-Stein mit Klemmspiel 0,00 mm** erzeugen, als STL exportieren und mit
-dem Profil drucken, das du auch später verwenden willst (gleiche Düse, gleiche
-Schichthöhe, gleiches Material).
+Bei den meisten Sachen fällt das nicht auf. Bei einem Klemmbaustein schon. Ob er
+hält oder nicht, entscheidet sich in **hundertstel Millimetern** — das ist
+dünner als ein Haar. Ist die Noppe ein winziges bisschen zu dünn, fällt der Turm
+auseinander.
 
-### Schritt 2 — Messen (Messschieber)
+Die gute Nachricht: Dein Drucker macht diesen Fehler **immer gleich**. Du musst
+ihn also nur einmal ausmessen und die Zahlen eintragen. Danach passt es für alle
+Steine, die du je druckst. Das dauert einen Nachmittag und lohnt sich.
 
-Miss und notiere:
+### Schritt 1 — Einen Teststein drucken
 
-| Maß | Sollwert (4×2) |
+Erzeuge einen **4×2-Stein** und lass das Feld **Klemmspiel** dabei auf `0,00`
+stehen. Als STL exportieren und ausdrucken — mit demselben Material, derselben
+Düse und derselben Schichthöhe, die du auch später benutzen willst. Änderst du
+davon später etwas, stimmt die Messung nicht mehr.
+
+### Schritt 2 — Nachmessen
+
+Jetzt brauchst du einen **Messschieber** (auch Schieblehre genannt). Ein
+Lineal reicht nicht — wir suchen nach Unterschieden, die kleiner sind als der
+Strich auf dem Lineal.
+
+Miss den gedruckten Stein an diesen Stellen und schreib auf, was du abliest.
+Rechts steht, was eigentlich herauskommen müsste:
+
+| Was du misst | Sollwert beim 4×2 |
 |---|---|
 | Länge | 31,80 mm |
 | Breite | 15,80 mm |
@@ -450,32 +472,60 @@ Miss und notiere:
 | Röhre außen | 6,51 mm |
 | Röhre innen | 4,95 mm |
 
-### Schritt 3 — Bewerten
+### Schritt 3 — Vergleichen: es gibt zwei Sorten Fehler
 
-* Ist die **Länge/Breite zu klein** → dein Drucker schrumpft. In Prozent rechnen:
-  `(31,80 − gemessen) / 31,80 × 100`.
-* Ist die **Noppe zu klein** (der Normalfall) → an runden, konvexen Features
-  verliert dein Drucker Material. Die Differenz ist eine Konstante, sie wächst
-  nicht mit dem Maß.
-* Genau diese beiden Fehler addieren sich am Klemmkontakt und machen den Stein
-  locker.
+Das ist der wichtigste Gedanke im ganzen Kapitel. Wenn dein Stein nicht stimmt,
+kann das **zwei völlig verschiedene Gründe** haben — und jeder braucht seine
+eigene Gegenmaßnahme.
 
-### Schritt 4 — Korrigieren
+**Fehler 1: Alles wird ein bisschen kleiner.**
+Wie ein Pullover, der in der Wäsche eingeht. Der Ärmel schrumpft mehr als der
+Kragen, weil er länger ist — der Fehler **wächst mit der Größe**. Bei uns:
+Der Stein sollte 31,80 mm lang sein, ist aber nur 31,73 mm. Das sind 0,22 %
+zu wenig, und dieselben 0,22 % fehlen dann auch bei einem Riesenstein.
 
-**Der einfache Weg:** Klemmspiel im Dialog um den fehlenden Betrag erhöhen.
-Fehlen an der Noppe 0,20 mm im Durchmesser → Klemmspiel auf `+0,20` und neu drucken.
+**Fehler 2: Runde Sachen werden zu dünn — immer um denselben Betrag.**
+Das ist der dicke Filzstift von vorhin. Er ist immer gleich dick, egal ob du
+einen kleinen oder einen großen Kreis malst. Bei uns: Die Noppe sollte 4,80 mm
+dick sein, ist aber nur 4,56 mm. Es fehlen 0,24 mm — und **genau diese
+0,24 mm** fehlen auch an jeder anderen Rundung, egal wie groß sie ist.
 
-**Der saubere Weg:** ein eigenes Druckprofil anlegen (siehe Abschnitt 7). Dann
-stimmen auch Außenmaß und Röhrenposition, nicht nur die Klemmung.
+> **Warum das wichtig ist:** Wenn du versuchst, den Filzstift-Fehler mit einem
+> Prozentwert wegzurechnen, geht es schief. Bei der kleinen Noppe wären 0,24 mm
+> ganze 5 Prozent — rechnest du überall 5 Prozent drauf, wird der ganze Stein
+> viel zu groß. Deshalb hat der Dialog für jede Fehlersorte ein eigenes Feld.
 
-### Ein Hinweis aus der Praxis — Röhren-Innendurchmesser
+Am Klemmkontakt zwischen Noppe und Röhre addieren sich beide Fehler. Deshalb
+ist ein unkalibrierter Stein fast immer zu locker.
 
-Wenn die Röhre innen deutlich zu eng ist: das ist meistens **kein Modellfehler**.
-Slicer runden die dünne Ringwand auf ganze Perimeter auf. Aus 0,78 mm modellierter
-Wand werden dann z. B. 2 × 0,478 = 0,955 mm — nach innen aufgeweitet. Ein Aufmaß
-im Modell verpufft in dem Fall komplett; die **Wandbreite gehört in den Slicer**
-(z. B. auf 2 × 0,39 mm setzen). Auf die normale Klemmung beim Stapeln hat das
-übrigens keinen Einfluss — dort greift nur die **Außenseite** der Röhre.
+### Schritt 4 — Die Zahlen eintragen
+
+**Der schnelle Weg:** Erhöhe im Dialog einfach das **Klemmspiel** um das, was
+an der Noppe fehlt. Fehlen 0,20 mm, trägst du `+0,20` ein und druckst neu. Der
+Stein hält dann — aber sein Außenmaß stimmt weiterhin nicht ganz.
+
+**Der saubere Weg:** Trage deine Messwerte in die Gruppe
+**Druckerkalibrierung** ein (Sollwert und gemessener Wert, siehe Abschnitt 5)
+oder leg dir ein eigenes Druckprofil an (Abschnitt 7). Dann stimmen auch
+Außenmaß und Röhrenposition, nicht nur die Klemmung.
+
+### Wenn die Röhre innen zu eng ist
+
+Das ist ein Sonderfall, der viele ratlos macht: Die Röhre unten im Stein ist
+innen viel zu eng, obwohl außen alles passt. **Das ist meistens gar kein Fehler
+am Modell** — und Aufmaße im Dialog bringen dort nichts.
+
+Der Grund liegt im Slicer, also dem Programm, das aus dem Modell die
+Druckbefehle macht. Die Röhrenwand ist mit 0,78 mm sehr dünn. Der Slicer druckt
+aber am liebsten in ganzen Linien nebeneinander, und zwei seiner Linien sind
+zusammen 0,955 mm dick. Diesen Überschuss schiebt er nach innen — das Loch wird
+enger.
+
+Die Lösung gehört deshalb in den Slicer, nicht ins Modell: Stell die Wandbreite
+dort auf einen Wert, der zweimal in 0,78 mm passt (z. B. 2 × 0,39 mm).
+
+Fürs normale Stapeln ist das übrigens egal. Dabei greift nur die **Außenseite**
+der Röhre — das enge Loch stört erst, wenn du eine Achse hindurchstecken willst.
 
 ---
 
