@@ -621,6 +621,7 @@ footer {{
 <footer>
   <p>Alle Zeichnungen sind aus den Konstruktionsdaten des Generators erzeugt
      und damit immer auf demselben Stand wie das Add-In.</p>
+  <p>&copy; 2026 Berthold Wolf &middot; MIT-Lizenz</p>
   <p>LEGO&reg; ist eine eingetragene Marke der LEGO Gruppe. Dieses Projekt
      steht in keiner Verbindung zu ihr.</p>
 </footer>
