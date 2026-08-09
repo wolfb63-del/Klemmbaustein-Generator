@@ -70,6 +70,11 @@ sys.path.insert(0, HIER)
 import Klemmbaustein as K       # noqa: E402
 import zeichnen as Z            # noqa: E402
 
+# Ziel der Download-Knoepfe. Die Anleitung wird auch ueber GitHub Pages
+# gelesen, wo es keine Dateiliste daneben gibt - ohne diesen Link stuende
+# der Leser dort ohne Weg zum Add-In da.
+REPO = 'https://github.com/wolfb63-del/Klemmbaustein-Generator'
+
 
 def de(zahl, nachkomma=2):
     return ('{:.' + str(nachkomma) + 'f}').format(zahl).replace('.', ',')
@@ -391,7 +396,7 @@ def seite():
             'Kanten', 'Technic', 'Kalibrierung', 'Rechtliches']))
 
     return VORLAGE.format(navigation=navigation, inhalt=''.join(teile),
-                          typenzahl=len(K.TYPEN))
+                          typenzahl=len(K.TYPEN), repo=REPO)
 
 
 VORLAGE = u"""<!doctype html>
@@ -484,6 +489,21 @@ header h1 {{
 header p {{
   margin: 0 auto; max-width: 34rem; color: var(--leise);
   font-size: clamp(1rem, .9rem + .4vw, 1.2rem);
+}}
+.holen {{ margin: 2.2rem 0 0; }}
+.knopf {{
+  display: inline-block; background: var(--akzent); color: #fff;
+  text-decoration: none; font-weight: 600; font-size: 1.02rem;
+  padding: .85rem 2rem; border-radius: 99px;
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--akzent) 38%, transparent);
+  transition: transform .18s ease, box-shadow .18s ease;
+}}
+.knopf:hover {{
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--akzent) 48%, transparent);
+}}
+.knopf-fuss {{
+  display: block; margin-top: .8rem; font-size: .85rem; color: var(--leise);
 }}
 nav {{
   position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap;
@@ -615,10 +635,16 @@ footer {{
   <h1>Klemmbaustein-Generator</h1>
   <p>Parametrische, klemmbaustein-kompatible Bauteile f&uuml;r Fusion –
      {typenzahl} Bauteiltypen, Druckerkalibrierung, STL-Export</p>
+  <p class="holen">
+    <a class="knopf" href="{repo}">Add-In herunterladen</a>
+    <span class="knopf-fuss">kostenlos &middot; MIT-Lizenz &middot;
+      l&auml;uft mit der Fusion-Hobbylizenz</span>
+  </p>
 </header>
 <nav>{navigation}</nav>
 <main>{inhalt}</main>
 <footer>
+  <p><a class="knopf" href="{repo}">Add-In herunterladen</a></p>
   <p>Alle Zeichnungen sind aus den Konstruktionsdaten des Generators erzeugt
      und damit immer auf demselben Stand wie das Add-In.</p>
   <p>&copy; 2026 Berthold Wolf &middot; MIT-Lizenz</p>
