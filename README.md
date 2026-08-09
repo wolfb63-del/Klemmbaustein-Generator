@@ -3,7 +3,7 @@
 Ein Add-In, das klemmbaustein-kompatible Bauteile parametrisch erzeugt —
 mit Live-Vorschau, Druckerkalibrierung und STL-Export.
 
-**[→ Bebilderte Anleitung](anleitung.html)** (im Browser öffnen)
+**[→ Bebilderte Anleitung online lesen](https://wolfb63-del.github.io/Klemmbaustein-Generator/)**
 · [Ausführliche Anleitung als Text](ANLEITUNG.md)
 
 ---
