@@ -59,6 +59,13 @@ Klemmbaustein\
 ### Weg A — Ordner an die richtige Stelle kopieren (empfohlen)
 
 1. ZIP entpacken. Du erhältst den Ordner `Klemmbaustein`.
+
+   > **Wenn du über den grünen „Code"-Knopf bei GitHub geladen hast**, heißt
+   > der Ordner stattdessen `Klemmbaustein-Generator-main`. **Benenne ihn in
+   > `Klemmbaustein` um**, sonst startet das Add-In nicht. Wer das umgehen
+   > will, lädt die ZIP-Datei unter *Releases* — die ist schon richtig
+   > benannt.
+
 2. Diesen Ordner **komplett** kopieren nach:
 
    **Windows**

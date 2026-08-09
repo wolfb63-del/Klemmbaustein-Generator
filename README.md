@@ -39,6 +39,11 @@ Dazu:
 1. Diesen Ordner nach
    `%APPDATA%\Autodesk\Autodesk Fusion 360\API\AddIns\Klemmbaustein\` kopieren
    (macOS: `~/Library/Application Support/Autodesk/Autodesk Fusion 360/API/AddIns/`)
+
+   > **Der Ordner muss `Klemmbaustein` heißen.** Lädst du hier über den grünen
+   > **Code**-Knopf, heißt er nach dem Entpacken `Klemmbaustein-Generator-main`
+   > — dann vorher umbenennen. Die ZIP-Datei unter **Releases** ist bereits
+   > richtig benannt.
 2. In Fusion: **Utilities → ADD-INS → Add-Ins → Klemmbaustein → Run**
 3. Der Befehl liegt danach unter **SOLID → CREATE → Klemmbaustein-Generator**
 
