@@ -490,7 +490,9 @@ header p {{
   margin: 0 auto; max-width: 34rem; color: var(--leise);
   font-size: clamp(1rem, .9rem + .4vw, 1.2rem);
 }}
-.holen {{ margin: 2.2rem 0 0; }}
+/* auto links/rechts muss bleiben - header p zentriert sich ueber margin,
+   und ein blosses "margin: 2.2rem 0 0" haenge den Knopf nach links. */
+.holen {{ margin: 2.2rem auto 0; }}
 .knopf {{
   display: inline-block; background: var(--akzent); color: #fff;
   text-decoration: none; font-weight: 600; font-size: 1.02rem;
