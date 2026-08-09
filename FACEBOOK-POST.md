@@ -1,25 +1,36 @@
 # Text für den Facebook-Post
 
-Kurzfassung zum direkten Reinkopieren. Die ausführliche Anleitung
-(`ANLEITUNG.md`) gehört mit ins ZIP.
+Fertig zum Kopieren, Links sind eingesetzt.
+
+**Wichtig:** Facebook kann keine Markdown-Formatierung. Die Texte unten stehen
+deshalb bewusst ohne `**Sternchen**` — die würden im Beitrag wörtlich
+erscheinen. Alles zwischen den Trennlinien 1:1 übernehmen.
+
+Die Links:
+
+| Ziel | Adresse |
+|---|---|
+| Anleitung (empfohlen als Aufmacher) | https://wolfb63-del.github.io/Klemmbaustein-Generator/ |
+| Direkter Download | https://github.com/wolfb63-del/Klemmbaustein-Generator/releases/latest |
+| Projektseite | https://github.com/wolfb63-del/Klemmbaustein-Generator |
 
 ---
 
-## Variante A — kurz (für den Post selbst)
+## Variante A — für den Post selbst
 
-🧱 **Klemmbaustein-Generator für Fusion — kostenlos**
+🧱 Klemmbaustein-Generator für Fusion — kostenlos
 
 Ich habe ein Add-In für Autodesk Fusion gebaut, das klemmbaustein-kompatible
 Teile auf Knopfdruck erzeugt. Kein Skizzieren, kein Modellieren: Typ wählen,
 Größe eintippen, fertig.
 
-✅ 11 Bauteiltypen: Stein, Platte, Fliese, Technic-Stein, Jumper-Platte,
-   Halbstein, Lochbalken, Eckstein, Rundstein, Schrägstein, Grundplatte
+✅ 11 Bauteiltypen: Stein, Halbstein, Platte, Fliese, Jumper-Platte,
+Technic-Stein, Lochbalken, Schrägstein, Eckstein, Rundstein, Grundplatte
 ✅ 1×1 bis 32×32 Noppen, frei kombinierbar
 ✅ Echte Röhren an der Unterseite (bei 1×N Stege, wie beim Original)
 ✅ Live-Vorschau während der Eingabe
 ✅ Kanten brechen: Fase oder Radius, getrennt für Einführkante, Noppen und
-   Außenkanten — macht das Zusammenstecken spürbar leichter
+Außenkanten — macht das Zusammenstecken spürbar leichter
 ✅ Druckerkalibrierung: du misst deinen Teststein, das Add-In rechnet
 ✅ Druckprofile für PETG, PLA, Resin — plus Regler für die Klemmkraft
 ✅ STL-Export direkt beim Erzeugen, mit sprechendem Dateinamen
@@ -28,32 +39,35 @@ Größe eintippen, fertig.
 Das Ganze läuft mit der kostenlosen Fusion-Hobbylizenz, Python muss man nicht
 installieren.
 
-Das Beste: Der Klemmspiel-Regler. Halten eure Steine nicht? Wert um 0,05 hoch,
-neu drucken. Sitzen sie bockfest? Runter damit. Der Dialog rechnet live mit und
-sagt euch, wie viel Luft am Klemmkontakt bleibt — bevor ihr druckt.
+Das Beste ist der Klemmspiel-Regler. Halten eure Steine nicht? Wert um 0,05
+hoch, neu drucken. Sitzen sie bockfest? Runter damit. Der Dialog rechnet live
+mit und sagt euch, wie viel Luft am Klemmkontakt bleibt — bevor ihr druckt.
 
-Im ZIP liegt eine ausführliche Anleitung inklusive Kalibrier-Runde: einmal einen
-4×2 drucken, nachmessen, Werte eintragen — danach passt es dauerhaft für euren
-Drucker.
+Dazu gibt es eine bebilderte Anleitung mit einer Kalibrier-Runde: einmal einen
+4×2 drucken, nachmessen, zwei Zahlen eintragen — danach passt es dauerhaft für
+euren Drucker. Die Zeichnungen darin sind direkt aus den Konstruktionsdaten
+erzeugt, stimmen also immer mit dem überein, was rauskommt.
 
-📥 Download: [LINK EINFÜGEN]
+📖 Anleitung ansehen: https://wolfb63-del.github.io/Klemmbaustein-Generator/
+📥 Direkt herunterladen: https://github.com/wolfb63-del/Klemmbaustein-Generator/releases/latest
 
 Rückmeldungen und eure kalibrierten Druckerprofile nehme ich gern auf — je mehr
 Profile zusammenkommen, desto besser für alle. 🙂
 
-*Unabhängiges, kostenloses Privatprojekt ohne jede Verbindung zur LEGO Gruppe.
+Unabhängiges, kostenloses Privatprojekt ohne jede Verbindung zur LEGO Gruppe.
 LEGO® ist eine eingetragene Marke der LEGO Gruppe, die dieses Projekt weder
 sponsert noch autorisiert. Alle Maße stammen aus frei verfügbaren Nennmaßen des
-patentfreien Klemmbaustein-Rasters.*
+patentfreien Klemmbaustein-Rasters.
 
 ---
 
-## Variante B — sehr kurz (Kommentar / Gruppenregeln mit Zeichenlimit)
+## Variante B — sehr kurz (Kommentar / Gruppen mit Zeichenlimit)
 
 🧱 Kostenloses Fusion-Add-In: erzeugt Klemmbausteine in 11 Bauteiltypen von
 1×1 bis 32×32 auf Knopfdruck — mit Live-Vorschau, Kantenbrechung,
 Druckerkalibrierung, Klemmkraft-Regler und STL-Export. Läuft mit der
-Gratis-Hobbylizenz. Anleitung mit Kalibrier-Runde liegt bei. 📥 [LINK]
+Gratis-Hobbylizenz.
+📖 https://wolfb63-del.github.io/Klemmbaustein-Generator/
 
 ---
 
