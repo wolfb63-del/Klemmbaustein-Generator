@@ -17,50 +17,12 @@ veralten, ohne dass es auffaellt.
 import io
 import os
 import sys
-import types
 
 HIER = os.path.dirname(os.path.realpath(__file__))
 PROJEKT = os.path.dirname(HIER)
 
 
-def stub_adsk():
-    """Fusion-API vortaeuschen, damit das Add-In-Modul importierbar wird.
-
-    Gebraucht werden nur die Rechenfunktionen. Alles, was die API anfasst,
-    laeuft hier nie - der Stub muss deshalb nur den Import ueberstehen.
-    """
-    core = types.ModuleType('adsk.core')
-    fusion = types.ModuleType('adsk.fusion')
-    adsk = types.ModuleType('adsk')
-
-    class Dummy(object):
-        def __init__(self, *a, **k):
-            pass
-
-        def __getattr__(self, name):
-            return Dummy()
-
-        def __call__(self, *a, **k):
-            return Dummy()
-
-    for name in ('CommandCreatedEventHandler', 'InputChangedEventHandler',
-                 'ValidateInputsEventHandler', 'CommandEventHandler',
-                 'ApplicationCommandEventHandler'):
-        setattr(core, name, type(name, (object,), {}))
-    for name in ('Point3D', 'ValueInput', 'ObjectCollection', 'Matrix3D',
-                 'Vector3D', 'Circle3D', 'Arc3D', 'Line3D', 'Application',
-                 'DropDownStyles', 'GroupCommandInput', 'TabCommandInput',
-                 'Command', 'DialogResults', 'CommandTerminationReason'):
-        setattr(core, name, Dummy())
-    for name in ('Design', 'FeatureOperations', 'ExtentDirections',
-                 'OffsetStartDefinition', 'DistanceExtentDefinition',
-                 'MeshRefinementSettings'):
-        setattr(fusion, name, Dummy())
-
-    adsk.core, adsk.fusion = core, fusion
-    sys.modules['adsk'] = adsk
-    sys.modules['adsk.core'] = core
-    sys.modules['adsk.fusion'] = fusion
+from fusion_stub import stub_adsk   # noqa: E402
 
 
 stub_adsk()

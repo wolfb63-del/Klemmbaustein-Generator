@@ -8,53 +8,13 @@ Kalibrierfaktoren, Grenzen, Namensgebung, Infotexte.
 
 import os
 import sys
-import types
 
 # Projektordner ist der Ordner ueber diesem - kein fester Pfad, damit die
 # Pruefungen auch nach einem Klon irgendwo sonst laufen.
 HIER = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
 
-def stub_adsk():
-    """Minimaler Ersatz fuer die Fusion-API - nur so viel, wie der Import braucht."""
-    core = types.ModuleType('adsk.core')
-    fusion = types.ModuleType('adsk.fusion')
-    adsk = types.ModuleType('adsk')
-
-    class Dummy(object):
-        def __init__(self, *a, **k):
-            pass
-
-        def __getattr__(self, name):
-            return Dummy()
-
-        def __call__(self, *a, **k):
-            return Dummy()
-
-    # Von diesen wird geerbt - sie muessen echte Klassen sein.
-    for name in ('CommandCreatedEventHandler', 'InputChangedEventHandler',
-                 'ValidateInputsEventHandler', 'CommandEventHandler',
-                 'ApplicationCommandEventHandler'):
-        setattr(core, name, type(name, (object,), {}))
-
-    for name in ('Point3D', 'ValueInput', 'ObjectCollection', 'Matrix3D',
-                 'Vector3D', 'Circle3D', 'Arc3D', 'Line3D', 'Application',
-                 'DropDownStyles', 'GroupCommandInput', 'TabCommandInput',
-                 'Command', 'DialogResults', 'CommandTerminationReason'):
-        setattr(core, name, Dummy())
-
-    for name in ('Design', 'FeatureOperations', 'ExtentDirections',
-                 'OffsetStartDefinition', 'DistanceExtentDefinition',
-                 'MeshRefinementSettings'):
-        setattr(fusion, name, Dummy())
-
-    # MESH greift auf konkrete Attribute zu.
-    fusion.MeshRefinementSettings = Dummy()
-    adsk.core = core
-    adsk.fusion = fusion
-    sys.modules['adsk'] = adsk
-    sys.modules['adsk.core'] = core
-    sys.modules['adsk.fusion'] = fusion
+from fusion_stub import stub_adsk   # noqa: E402
 
 
 stub_adsk()
@@ -617,6 +577,41 @@ pruefe('X/Y-Warnung ist rot',
 t_farb = K._info_text(K.TYP_STEIN, 4, 2, 'PLA (0,2 mm Schicht)', 0.0)
 pruefe('jedes span wird geschlossen',
        t_farb.count('<span'), t_farb.count('</span>'))
+
+print('\n--- Roehren- und Stegstellen (bisher ungeprueft) ---')
+pruefe('4x2 Stein: drei Roehren', len(K._roehren_stellen(K.TYP_STEIN, 4, 2)), 3)
+pruefe('2x2: eine Roehre mittig', K._roehren_stellen(K.TYP_STEIN, 2, 2),
+       [(1, 1)])
+pruefe('1xN hat keine Roehren', K._roehren_stellen(K.TYP_STEIN, 4, 1), [])
+pruefe('1xN hat stattdessen Stege', len(K._stege_stellen(K.TYP_STEIN, 4, 1)), 3)
+pruefe('ab 2x2 keine Stege', K._stege_stellen(K.TYP_STEIN, 4, 2), [])
+pruefe('Grundplatte bleibt massiv',
+       K._roehren_stellen(K.TYP_GRUNDPLATTE, 4, 4), [])
+
+# Eine Roehre steht auf einem Rasterkreuz und braucht alle vier angrenzenden
+# Felder. Beim L-foermigen Eckstein fehlen genau die, die im Ausschnitt
+# liegen - der Filter ist komplexer als bei den Noppen und war ungeprueft.
+eck = K._roehren_stellen(K.TYP_ECK, 4, 4, 1)
+pruefe('Eckstein 4x4 Schenkel 1: keine Roehre traegt',
+       eck, [])
+eck2 = K._roehren_stellen(K.TYP_ECK, 4, 4, 2)
+pruefe('Schenkel 2 traegt Roehren', len(eck2) > 0, True)
+pruefe('keine Roehre im Ausschnitt',
+       all(K._im_eck(a, b_, 4, 4, 2)
+           for i, j in eck2 for a in (i - 1, i) for b_ in (j - 1, j)), True)
+
+# Beim Rundstein faellt weg, was zu weit ueber den Rand ragt. Beim 4x4 noch
+# nichts: Roehren sitzen auf den Rasterkreuzen und damit weiter innen als die
+# Noppen - dort greift der Rundfilter erst spaeter als oben.
+pruefe('Rundstein 4x4 behaelt alle Roehren',
+       len(K._roehren_stellen(K.TYP_RUND, 4, 4)),
+       len(K._roehren_stellen(K.TYP_STEIN, 4, 4)))
+pruefe('Rundstein 4x4 verliert dagegen Noppen',
+       len(K._noppen_stellen(K.TYP_RUND, 4, 4)) <
+       len(K._noppen_stellen(K.TYP_STEIN, 4, 4)), True)
+pruefe('Rundstein 6x6 verliert Eckroehren',
+       len(K._roehren_stellen(K.TYP_RUND, 6, 6)) <
+       len(K._roehren_stellen(K.TYP_STEIN, 6, 6)), True)
 
 print('\n' + '=' * 70)
 if fehler:

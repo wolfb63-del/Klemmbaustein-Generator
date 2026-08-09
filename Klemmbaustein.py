@@ -636,11 +636,16 @@ class Justage(object):
     def __init__(self, fx=1.0, fy=1.0, fz=1.0, rund=0.0, loch=0.0,
                  methode=METHODE_FASE, kante_unten=0.0, kante_noppe=0.0,
                  eckradius=0.0):
-        self.fx = fx
-        self.fy = fy
-        self.fz = fz
-        self.rund = rund
-        self.loch = loch
+        # Alle Felder werden hier begrenzt, nicht nur die Kanten: Bisher
+        # verliess sich rund/loch allein auf die Dialogpruefung. Ein direkt
+        # gebautes Justage-Objekt - aus einem Skript oder kuenftigem Code -
+        # haette gar kein Netz gehabt, und ein Aufmass von 5 mm auf die Noppe
+        # faellt erst nach dem Druck auf.
+        self.fx = max(FAKTOR_MIN, min(FAKTOR_MAX, fx))
+        self.fy = max(FAKTOR_MIN, min(FAKTOR_MAX, fy))
+        self.fz = max(FAKTOR_MIN, min(FAKTOR_MAX, fz))
+        self.rund = max(0.0, min(MAX_RUND, rund))
+        self.loch = max(0.0, min(MAX_RUND, loch))
         self.methode = methode
         self.kante_unten = max(0.0, min(KANTE_MAX, kante_unten))
         self.kante_noppe = max(0.0, min(KANTE_NOPPE_MAX, kante_noppe))
@@ -1099,7 +1104,7 @@ def _dateiname(typ, nx, ny, klemm=0.0, profil_name=None, ns=None, justage=None,
         basis += '_{}{:02d}'.format(
             'r' if justage.methode == METHODE_RADIUS else 'f',
             int(round(grob * 100)))
-    return ''.join(c for c in basis if c.isalnum() or c in ('_', '-'))
+    return b.saeubere_dateiname(basis)
 
 
 # ---------------------------------------------------------------------------
@@ -1356,7 +1361,13 @@ def _aktualisiere_info(inputs):
             justage, reduziert, cfg.schenkel, cfg.bohrung)
         _finde(inputs, IN_KAL_INFO).formattedText = _kalibrier_text(cfg)
     except Exception:
-        pass
+        # Nicht auffallen lassen darf man sich hier nichts: Die Routine feuert
+        # bei jedem Tastendruck, eine Messagebox waere unbenutzbar. Ein
+        # echter Fehler in _info_text bliebe ohne diese Zeile aber fuer immer
+        # unsichtbar - der Dialog zeigte einfach eine veraltete Zeile.
+        if app:
+            app.log('Klemmbaustein: Infozeile fehlgeschlagen\n{}'.format(
+                traceback.format_exc()))
 
 
 def _kalibrier_text(cfg):
@@ -1508,7 +1519,9 @@ def _sichtbarkeit(inputs):
         # Die Grundplatte klemmt nur von oben - das Klemmspiel wirkt dort
         # ausschliesslich auf die Noppen, bleibt also sinnvoll.
     except Exception:
-        pass
+        if app:
+            app.log('Klemmbaustein: Sichtbarkeit fehlgeschlagen\n{}'.format(
+                traceback.format_exc()))
 
 
 # ---------------------------------------------------------------------------

@@ -27,6 +27,13 @@ import adsk.fusion
 
 MM = 0.1   # Fusion rechnet intern in cm -> 1 mm = 0.1 cm
 
+# Grenzen fuer den Schrumpfvorhalt aus einem Druckprofil. Bewusst dieselben
+# Werte wie FAKTOR_MIN/MAX im Klemmbaustein-Add-In: Beide beschreiben, was ein
+# Drucker plausibel danebenliegt. Alles darueber ist ein Tippfehler, kein
+# Messergebnis.
+SCHRUMPF_MIN = 0.98
+SCHRUMPF_MAX = 1.02
+
 
 def pt(x_mm, y_mm, z_mm=0.0):
     """Point3D aus mm-Angaben."""
@@ -357,7 +364,12 @@ def schrumpf_faktor(profil):
     prozent = profil.get('komp_schrumpf', 0.0)
     if abs(prozent) < 1e-9:
         return 1.0
-    return 1.0 / (1.0 - prozent / 100.0)
+    # Gedeckelt wie der Messwert-Pfad im Dialog. Ohne die Grenze gaebe ein
+    # Profil mit komp_schrumpf=100 eine Division durch null, und ein
+    # Tippfehler (2.0 statt 0.2) einen Stein, der nichts mehr klemmt. Die
+    # gleiche Zahl kommt aus zwei Wegen - dann muessen auch beide dieselbe
+    # Plausibilitaetsgrenze haben.
+    return max(SCHRUMPF_MIN, min(SCHRUMPF_MAX, 1.0 / (1.0 - prozent / 100.0)))
 
 
 def ist_kompensiert(profil):
