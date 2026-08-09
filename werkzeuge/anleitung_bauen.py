@@ -326,6 +326,23 @@ def seite():
             'gro&szlig;. Deshalb zwei Felder. Und immer am gro&szlig;en Teil '
             'messen: an kleinen Ma&szlig;en f&auml;llt der feste Fehler zu '
             'stark ins Gewicht.'),
+        '<h3>Warum es beim zweiten Mal leichter geht</h3>',
+        '<p>Steck deinen frisch gedruckten Stein ein paarmal zusammen &ndash; '
+        'er wird spuerbar leichtgaengiger. Eine gedruckte Noppe besteht aus '
+        'uebereinanderliegenden Ringen mit winzigen Graten an den '
+        'Schichtuebergaengen; beim ersten Stecken werden die plattgedrueckt. '
+        'Dazu gibt PLA unter Last plastisch nach, statt zurueckzufedern. Nach '
+        'etwa zehn Steckvorgaengen ist der Zustand stabil. Beim gekauften '
+        'Stein passiert das nicht: gespritztes ABS ist dicht und federt '
+        'elastisch zurueck.</p>',
+        hinweis(
+            'Stell deshalb nicht auf den Neuzustand ein, sondern auf den '
+            'eingelaufenen: rund <b>0,02 bis 0,03 mm mehr Klemmspiel</b>, als '
+            'sich frisch gedruckt richtig anfuehlt. Teststein zehnmal '
+            'zusammenstecken, dann urteilen. Wer weniger Verschleiss will, '
+            'druckt in PETG oder gibt der Noppe im Slicer drei statt zwei '
+            'Wandlinien &ndash; aber nicht das Rundungs-Aufmass hochdrehen, '
+            'das verschiebt die Geometrie gegenueber echten Steinen.'),
         '<h3>X und Y</h3>',
         '<p>Noppe und R&ouml;hre ber&uuml;hren sich &uuml;ber Eck, und dort '
         'ist nur 0,002 mm Platz. Behandelst du die beiden Richtungen '

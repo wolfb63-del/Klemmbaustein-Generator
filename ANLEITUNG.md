@@ -565,6 +565,39 @@ Stein hält dann — aber sein Außenmaß stimmt weiterhin nicht ganz.
 oder leg dir ein eigenes Druckprofil an (Abschnitt 7). Dann stimmen auch
 Außenmaß und Röhrenposition, nicht nur die Klemmung.
 
+### Warum es beim zweiten Mal leichter geht
+
+Steck deinen frisch gedruckten Stein ein paarmal zusammen — er wird spürbar
+leichtgängiger. Das ist normal und kein Fehler an deinen Maßen.
+
+Eine gedruckte Noppe besteht aus übereinanderliegenden Ringen mit winzigen
+Graten an den Schichtübergängen. Beim ersten Zusammenstecken werden die
+plattgedrückt und teilweise abgetragen. Dazu kommt, dass PLA unter Last
+plastisch nachgibt statt zurückzufedern — es „setzt sich". Nach etwa zehn
+Steckvorgängen ist der Zustand stabil.
+
+Beim gekauften Stein passiert das nicht: Spritzgegossenes ABS hat eine dichte,
+glatte Oberfläche und federt elastisch zurück.
+
+> **Was das für die Kalibrierung heißt:** Stell nicht auf den Neuzustand ein,
+> sondern auf den eingelaufenen. Also bewusst etwas strammer starten — rund
+> **0,02 bis 0,03 mm mehr Klemmspiel**, als sich frisch gedruckt richtig
+> anfühlt. Steck einen Teststein zehnmal zusammen und beurteile ihn erst
+> danach.
+
+Zwei Hebel, wenn es dich stärker stört:
+
+* **Material.** PETG ist zäher und federt besser zurück, läuft also weniger
+  ein. Dafür ist es maßlich launischer — du müsstest neu kalibrieren. ABS oder
+  ASA kommen dem Original am nächsten.
+* **Mehr Perimeter.** Gib der Noppe im Slicer drei statt zwei Wandlinien. Sie
+  ist dann innen dichter und gibt weniger nach. Kostet kaum Druckzeit, weil die
+  Noppen winzig sind.
+
+Was du dagegen **nicht** tun solltest: das Rundungs-Aufmaß hochdrehen, um den
+Verschleiß auszugleichen. Das verschiebt deine Geometrie gegenüber echten
+Steinen — dann passen deine Teile in fremde nicht mehr sauber.
+
 ### Wenn die Röhre innen zu eng ist
 
 Das ist ein Sonderfall, der viele ratlos macht: Die Röhre unten im Stein ist
