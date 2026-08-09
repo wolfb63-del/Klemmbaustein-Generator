@@ -1,0 +1,10 @@
+# Einheitlich LF, im Repo wie im Arbeitsverzeichnis.
+#
+# Ohne das macht core.autocrlf=true auf Windows beim Auschecken CRLF daraus.
+# Die Datei im Projektordner unterscheidet sich dann von der Kopie im
+# Fusion-AddIns-Ordner, obwohl beide denselben Inhalt haben - und der
+# md5sum-Abgleich beim Verteilen schlaegt an, ohne dass etwas passiert ist.
+* text=auto eol=lf
+
+# Symbole sind binaer und duerfen nie angefasst werden.
+*.png binary
