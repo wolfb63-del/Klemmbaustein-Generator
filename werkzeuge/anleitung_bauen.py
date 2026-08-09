@@ -631,7 +631,10 @@ footer {{
 
 def main():
     ziel = os.path.join(PROJEKT, 'anleitung.html')
-    with io.open(ziel, 'w', encoding='utf-8') as f:
+    # newline='\n' statt der Windows-Vorgabe CRLF: .gitattributes legt das
+    # Repo auf LF fest, und ohne das schriebe der Generator die Datei bei
+    # jedem Lauf in der jeweils anderen Form.
+    with io.open(ziel, 'w', encoding='utf-8', newline='\n') as f:
         f.write(seite())
     groesse = os.path.getsize(ziel) / 1024.0
     print('geschrieben: {}  ({:.1f} kB)'.format(ziel, groesse))
