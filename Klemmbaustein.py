@@ -1127,13 +1127,26 @@ def _info_text(typ, nx, ny, profil_name, klemm=None, ns=1, justage=None,
     if _ist_rund(typ):
         ny = nx
     w = _schenkel(nx, ny, schenkel)
-    hoehe = _hoehe(typ)
-    sx = nx * PITCH - p['gap']
-    sy = ny * PITCH - p['gap']
     noppen = len(_noppen_stellen(typ, nx, ny, w, p['gap'], min(ns, nx)))
 
+    # Alle Masse hier sind die des Modells, also mit Kalibrierung - sonst
+    # zeigte die Zeile weiter das Nennmass an, waehrend Fusion laengst etwas
+    # anderes baut, und man saehe der Kalibrierung nicht an, ob sie wirkt.
+    fr, k_rund = justage.f_rund, justage.rund
+    soll_x = nx * PITCH - p['gap']
+    soll_y = ny * PITCH - p['gap']
+    soll_h = _hoehe(typ)
+    sx = soll_x * justage.fx
+    sy = soll_y * justage.fy
+    hoehe = soll_h * justage.fz
+    noppen_d = (STUD_D + klemm) * fr + k_rund
+
     # Rest zwischen Noppe und Roehre: positiv = Luft, negativ = Uebermass.
-    rest = KLEMM_TANGENTE - ((STUD_D + klemm) / 2.0 + TUBE_OD / 2.0)
+    # Der Abstand der beiden Mittelpunkte waechst mit der Kalibrierung mit,
+    # die Durchmesser ebenso - ein reiner Prozentfaktor verschiebt die
+    # Klemmung deshalb kaum. Das Rundungs-Aufmass ist dagegen ein fester
+    # Betrag und schlaegt voll durch.
+    rest = KLEMM_TANGENTE * fr - (noppen_d / 2.0 + (TUBE_OD * fr + k_rund) / 2.0)
     if rest > 0.015:
         urteil = 'locker'
     elif rest < -0.015:
@@ -1156,17 +1169,25 @@ def _info_text(typ, nx, ny, profil_name, klemm=None, ns=1, justage=None,
         'konstruktiv {} mm darunter'.format(
             _de(nx * PITCH), _de(ny * PITCH), _de(p['gap'])),
         '<b>Noppen:</b> {} &times; &oslash; {} mm &nbsp;|&nbsp; '
-        '<b>Wand:</b> {} mm'.format(noppen, _de(STUD_D + klemm), _de(p['wall'])),
+        '<b>Wand:</b> {} mm'.format(noppen, _de(noppen_d), _de(p['wall'])),
         '<b>Klemmung:</b> {} mm Luft am Kontakt ({})'.format(_de(rest, 3), urteil),
     ]
-    # Die Masse oben sind die gewuenschten ENDmasse. Bei aktiver Kompensation
-    # ist das Modell absichtlich groesser - ohne diesen Hinweis wirkt jede
-    # Kontrollmessung in Fusion wie ein Fehler.
+    # Die Masse oben sind die des MODELLS, also das, was Fusion tatsaechlich
+    # baut und was ein Messen im Modell ergibt. Bei aktiver Kompensation ist
+    # das absichtlich groesser als das Zielmass - deshalb steht das Zielmass
+    # hier daneben, sonst weiss man nicht mehr, worauf man hinauswill.
     if justage.ist_aktiv:
+        zeilen.append(
+            '<b>Nach dem Druck erwartet:</b> {} mm &ndash; so viel kleiner '
+            'druckt dein Drucker das Modell wieder.'.format(
+                '{} &times; {} mm hoch'.format(_de(soll_x), _de(soll_h))
+                if _ist_rund(typ) else
+                '{} &times; {} &times; {}'.format(
+                    _de(soll_x), _de(soll_y), _de(soll_h))))
         zeilen.append(
             '<b>Kalibrierung:</b> X {} % &nbsp;|&nbsp; Y {} % &nbsp;|&nbsp; '
             'Z {} % &nbsp;|&nbsp; Rundungen +{} mm '
-            '(Modell entsprechend groesser)'.format(
+            '(im Modell bereits aufgeschlagen)'.format(
                 _de((justage.fx - 1.0) * 100.0, 3),
                 _de((justage.fy - 1.0) * 100.0, 3),
                 _de((justage.fz - 1.0) * 100.0, 3),

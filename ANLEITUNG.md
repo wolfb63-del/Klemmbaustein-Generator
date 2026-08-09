@@ -336,6 +336,12 @@ Rechnet live mit und zeigt Außenmaß, Noppenzahl, Wandstärke und vor allem:
 
 Das ist die ehrliche Bewertung deiner Einstellung, bevor du druckst.
 
+**Die genannten Maße sind die des Modells**, also das, was Fusion tatsächlich
+baut. Sobald du kalibrierst, wird das absichtlich größer als das Zielmaß — dann
+erscheint eine zusätzliche Zeile **„Nach dem Druck erwartet"** mit dem Maß, auf
+das du hinauswillst. Ein 4×2 mit 0,19 % Vorhalt steht also als 31,86 mm im
+Modell und soll nach dem Druck 31,80 mm messen.
+
 **Achte auf die Raster-Zeile.** Sie verhindert den häufigsten Messfehler:
 
 ```

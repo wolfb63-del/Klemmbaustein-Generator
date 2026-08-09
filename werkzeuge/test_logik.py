@@ -530,6 +530,42 @@ pruefe('Rundplatte meldet Durchmesser',
        'oslash' in K._info_text(K.TYP_RUNDPLATTE, 2, 2,
                                 'PLA (0,2 mm Schicht)').split('<br/>')[0], True)
 
+print('\n--- Infozeile zeigt die kompensierten Modellmasse ---')
+# Genau der Fall aus der Rueckmeldung vom 2026-08-09: X 31,80 soll,
+# 31,74 gemessen. Das Modell muss dann groesser gebaut werden - und die
+# Infozeile muss das auch anzeigen, sonst sieht man der Kalibrierung nicht
+# an, dass sie wirkt.
+j_kal = K.Justage(fx=K._faktor(31.8, 31.74), fy=K._faktor(31.8, 31.74),
+                  fz=K._faktor(15.8, 15.77))
+t_kal = K._info_text(K.TYP_STEIN, 4, 2, 'PLA (0,2 mm Schicht)', 0.0, 1, j_kal)
+pruefe('Modellmass ist groesser als das Nennmass',
+       '31,86' in t_kal, True)
+pruefe('Nennmass steht nicht mehr als Aussenmass da',
+       t_kal.split('<br/>')[0].count('31,80'), 0)
+pruefe('Zielmass nach dem Druck wird genannt', '31,80' in t_kal, True)
+
+t_roh = K._info_text(K.TYP_STEIN, 4, 2, 'PLA (0,2 mm Schicht)', 0.0, 1,
+                     K.Justage())
+pruefe('ohne Kalibrierung unveraendert 31,80', '31,80' in t_roh, True)
+pruefe('ohne Kalibrierung keine Zielmasszeile', 'nach dem Druck' in t_roh, False)
+
+# Ein reiner Prozentfaktor verschiebt die Klemmung praktisch nicht: Noppe,
+# Roehre und ihr Abstand wachsen zusammen. Das Rundungs-Aufmass dagegen ist
+# ein fester Betrag und wirkt sofort - genau deshalb gibt es beide Felder.
+def klemmrest(justage):
+    t = K._info_text(K.TYP_STEIN, 4, 2, 'PLA (0,2 mm Schicht)', 0.0, 1, justage)
+    for stueck in t.split('<br/>'):
+        if 'Klemmung' in stueck:
+            return stueck
+    return ''
+
+
+pruefe('Skalierung laesst die Klemmung fast unberuehrt',
+       klemmrest(j_kal).split('mm Luft')[0][-6:].strip(),
+       klemmrest(K.Justage()).split('mm Luft')[0][-6:].strip())
+pruefe('Rundungs-Aufmass macht es dagegen strammer',
+       'stramm' in klemmrest(K.Justage(rund=0.23)), True)
+
 print('\n' + '=' * 70)
 if fehler:
     print('FEHLGESCHLAGEN: {}'.format(len(fehler)))
