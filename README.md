@@ -10,7 +10,7 @@ mit Live-Vorschau, Druckerkalibrierung und STL-Export.
 
 ## Was es kann
 
-**Elf Bauteiltypen**, alle aus demselben 8-mm-Raster abgeleitet:
+**Vierzehn Bauteiltypen**, alle aus demselben 8-mm-Raster abgeleitet:
 
 | Typ | Höhe | Besonderheit |
 |---|---|---|
@@ -22,8 +22,11 @@ mit Live-Vorschau, Druckerkalibrierung und STL-Export.
 | Technic-Stein | 9,60 mm | Querbohrungen, wahlweise Rundloch oder Achskreuz |
 | Technic-Lochbalken | 9,60 mm | Querbohrungen ohne Noppen |
 | Schrägstein | 9,60 mm | Winkel ergibt sich aus der Länge der Schräge |
+| Schrägstein umgekehrt | 9,60 mm | Keil an der Unterseite, oben alle Noppen |
 | Eckstein | 9,60 mm | L-Form mit einstellbarer Schenkelbreite |
 | Rundstein | 9,60 mm | runder Grundriss |
+| Rundplatte | 3,20 mm | flache Fassung des Rundsteins |
+| Rundfliese | 3,20 mm | rund und ohne Noppen |
 | Grundplatte | 1,60 mm | massiv, klemmt nur von oben |
 
 Dazu:

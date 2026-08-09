@@ -132,12 +132,21 @@ def bauteiltypen():
          'dort, wo oben nichts im Weg sein soll.'),
         (K.TYP_SCHRAEG, 4, 2, 1, 'F&auml;llt zur Vorderkante auf Plattenh&ouml;he '
          'ab. Der Winkel ergibt sich aus der L&auml;nge der Schr&auml;ge.'),
+        (K.TYP_SCHRAEG_INV, 4, 2, 1, 'Derselbe Keil, aber an der '
+         '<b>Unterseite</b>. Oben bleibt die volle Fl&auml;che mit allen '
+         'Noppen &ndash; damit schliesst man eine Dachkante von unten ab. '
+         'Unter der Schr&auml;ge klemmt das Teil nicht.'),
         (K.TYP_ECK, 4, 4, 2, 'L-Form aus zwei Schenkeln. Die Schenkelbreite '
          'ist einstellbar &ndash; h&ouml;chstens eine Noppe weniger als die '
          'schmalere Seite.'),
         (K.TYP_RUND, 4, 4, 1, 'Runder Grundriss. Noppen und R&ouml;hren, die zu '
          'weit &uuml;ber den Rand ragen w&uuml;rden, entfallen &ndash; hier die '
          'vier Ecknoppen.'),
+        (K.TYP_RUNDPLATTE, 1, 1, 1, 'Die flache Fassung des Rundsteins, '
+         '3,20 mm hoch. Als 1&times;1 der meistgebaute Kleinkram &ndash; '
+         'Nieten, Kn&ouml;pfe, Untersetzer.'),
+        (K.TYP_RUNDFLIESE, 1, 1, 1, 'Wie die Rundplatte, aber ohne Noppe. '
+         'Gibt eine glatte runde Oberfl&auml;che.'),
         (K.TYP_GRUNDPLATTE, 6, 6, 1, 'Massiv, 1,60 mm dick, ohne Klemmung an '
          'der Unterseite.'),
     ]

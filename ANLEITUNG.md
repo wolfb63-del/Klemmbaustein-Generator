@@ -135,6 +135,9 @@ mit vollständiger Feature-Historie — du kannst also jederzeit weiterkonstruie
 | **Technic-Lochbalken** | 9,6 mm | glatt | Querbohrungen ohne Noppen |
 | **Eckstein** | 9,6 mm | Noppen | L-Form mit einstellbarer Schenkelbreite |
 | **Rundstein** | 9,6 mm | Noppen | runder Grundriss, Breite folgt der Länge |
+| **Schrägstein umgekehrt** | 9,6 mm | Noppen | Keil an der Unterseite, oben alle Noppen |
+| **Rundplatte** | 3,2 mm | Noppen | flache Fassung des Rundsteins |
+| **Rundfliese** | 3,2 mm | glatt | rund und ohne Noppen |
 
 ### Halbstein
 
@@ -246,6 +249,33 @@ Die Röhren in diesem Bereich sind genauso hoch wie dieser flache Hohlraum.
 Auf voller Höhe würden sie oben durch die Schrägfläche stoßen und sie
 aufrauen; geklemmt wird ohnehin nur an den obersten knapp zwei Millimetern
 der Noppe, die kürzere Röhre hält also genauso.
+
+### Schrägstein umgekehrt
+
+Derselbe Keil wie beim Schrägstein, nur an der **Unterseite**. Die Oberseite
+bleibt vollständig erhalten und trägt alle Noppen — anders als beim normalen
+Schrägstein, wo vorn welche entfallen.
+
+Gebraucht wird er als Gegenstück: Der normale Schrägstein bildet die Dachfläche,
+der umgekehrte schließt die Kante darunter ab. Zusammen ergeben sie einen
+sauberen Übergang statt einer Stufe.
+
+Das Feld **Schräge (Noppen)** wirkt genauso wie beim normalen Schrägstein.
+
+> **Unter der Schräge klemmt das Teil nicht.** Dort ist kein Material mehr
+> übrig, in das eine Röhre hineinragen könnte — es wurde ja gerade
+> weggeschnitten. Die Klemmung kommt aus dem hinteren, vollen Bereich und von
+> den Noppen oben. Bei einer Schräge über die ganze Länge bleibt unten gar
+> nichts zum Klemmen; dann hält das Teil nur noch über seine Oberseite.
+
+### Rundplatte und Rundfliese
+
+Die flachen Fassungen des Rundsteins, beide 3,2 mm hoch. Die Rundplatte hat
+Noppen, die Rundfliese ist glatt. Wie beim Rundstein folgt die Breite der Länge,
+das Feld **Breite** wird deshalb ausgeblendet.
+
+Als 1×1 sind das die meistgebrauchten Kleinteile überhaupt — Nieten, Knöpfe,
+Scheinwerfer, Untersetzer für Figuren.
 
 ### Länge / Breite (Noppen)
 

@@ -478,6 +478,58 @@ pruefe('volle Hoehe waere ein Durchstoss',
 # keine Roehre mehr sinnvoll - sie klemmte nichts und stuende nur im Weg.
 pruefe('zu flach = keine Roehre', hoehe_bei(7.9, SCHRAEGE_L, K.STUD_H), 0.0)
 
+print('\n--- Neue Typen: Rundplatte, Rundfliese, umgekehrte Schraege ---')
+pruefe('Rundplatte ist Plattenhoehe', K._hoehe(K.TYP_RUNDPLATTE), K.PLATE_H)
+pruefe('Rundfliese ist Plattenhoehe', K._hoehe(K.TYP_RUNDFLIESE), K.PLATE_H)
+pruefe('umgekehrte Schraege ist Steinhoehe',
+       K._hoehe(K.TYP_SCHRAEG_INV), K.BRICK_H)
+pruefe('Rundplatte zaehlt als rund', K._ist_rund(K.TYP_RUNDPLATTE), True)
+pruefe('Rundfliese zaehlt als rund', K._ist_rund(K.TYP_RUNDFLIESE), True)
+pruefe('Rundstein weiterhin rund', K._ist_rund(K.TYP_RUND), True)
+pruefe('Platte ist nicht rund', K._ist_rund(K.TYP_PLATTE), False)
+pruefe('Rundfliese ohne Noppen',
+       K._noppen_stellen(K.TYP_RUNDFLIESE, 2, 2), [])
+pruefe('Rundplatte behaelt ihre Noppen',
+       len(K._noppen_stellen(K.TYP_RUNDPLATTE, 2, 2)), 4)
+pruefe('Rundplatte filtert wie der Rundstein',
+       K._noppen_stellen(K.TYP_RUNDPLATTE, 4, 4),
+       K._noppen_stellen(K.TYP_RUND, 4, 4))
+pruefe('alle Typen eindeutig', len(set(K.TYPEN)), len(K.TYPEN))
+pruefe('vierzehn Typen', len(K.TYPEN), 14)
+
+# Der grosse Unterschied zum normalen Schraegstein: oben bleibt alles
+# stehen, die Noppen also auch. Weggeschnitten wird unten.
+pruefe('umgekehrte Schraege behaelt alle Noppen',
+       len(K._noppen_stellen(K.TYP_SCHRAEG_INV, 4, 2, 1, 0.20, 2)), 8)
+pruefe('normale Schraege verliert welche',
+       len(K._noppen_stellen(K.TYP_SCHRAEG, 4, 2, 1, 0.20, 2)), 4)
+
+# Unter der umgekehrten Schraege ist gar kein Material mehr - dort kann
+# auch keine Roehre haengen. Das erledigt flach_tiefe = 0.
+KAV = K.BRICK_H - K.TOP_WALL
+pruefe('keine Roehre unter der umgekehrten Schraege',
+       K._roehren_hoehe(7.9, K.TUBE_OD, 16.0, KAV, 0.0, K.STUD_H), 0.0)
+pruefe('dahinter volle Hoehe',
+       K._roehren_hoehe(23.9, K.TUBE_OD, 16.0, KAV, 0.0, K.STUD_H), KAV)
+
+print('\n--- Dateinamen und Infozeilen der neuen Typen ---')
+pruefe('Rundplatte', K._dateiname(K.TYP_RUNDPLATTE, 2, 2, 0.0,
+                                  'PLA (0,2 mm Schicht)'), 'Rundplatte_d2_k00')
+pruefe('Rundfliese', K._dateiname(K.TYP_RUNDFLIESE, 2, 2, 0.0,
+                                  'PLA (0,2 mm Schicht)'), 'Rundfliese_d2_k00')
+pruefe('umgekehrte Schraege im Namen',
+       K._dateiname(K.TYP_SCHRAEG_INV, 4, 2, 0.0, 'PLA (0,2 mm Schicht)', 2),
+       'Schraegstein_umgekehrt_4x2s2_k00')
+for typ in (K.TYP_RUNDPLATTE, K.TYP_RUNDFLIESE, K.TYP_SCHRAEG_INV):
+    t = K._info_text(typ, 4, 2, 'PLA (0,2 mm Schicht)')
+    ok = len(t) > 50 and 'Aussenmass' in t
+    print('   {:<22} {} Zeichen  {}'.format(typ, len(t), 'ok' if ok else 'LEER'))
+    if not ok:
+        fehler.append('Infotext ' + typ)
+pruefe('Rundplatte meldet Durchmesser',
+       'oslash' in K._info_text(K.TYP_RUNDPLATTE, 2, 2,
+                                'PLA (0,2 mm Schicht)').split('<br/>')[0], True)
+
 print('\n' + '=' * 70)
 if fehler:
     print('FEHLGESCHLAGEN: {}'.format(len(fehler)))

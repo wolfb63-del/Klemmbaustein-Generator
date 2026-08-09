@@ -168,13 +168,20 @@ TYP_JUMPER = 'Jumper-Platte'
 TYP_HALBSTEIN = 'Halbstein'
 TYP_LOCHBALKEN = 'Technic-Lochbalken'
 TYP_RUND = 'Rundstein'
+TYP_RUNDPLATTE = 'Rundplatte'
+TYP_RUNDFLIESE = 'Rundfliese'
 TYP_ECK = 'Eckstein'
+TYP_SCHRAEG_INV = 'Schraegstein umgekehrt'
 TYPEN = [TYP_STEIN, TYP_HALBSTEIN, TYP_PLATTE, TYP_FLIESE, TYP_JUMPER,
-         TYP_TECHNIC, TYP_LOCHBALKEN, TYP_SCHRAEG, TYP_ECK, TYP_RUND,
-         TYP_GRUNDPLATTE]
+         TYP_TECHNIC, TYP_LOCHBALKEN, TYP_SCHRAEG, TYP_SCHRAEG_INV, TYP_ECK,
+         TYP_RUND, TYP_RUNDPLATTE, TYP_RUNDFLIESE, TYP_GRUNDPLATTE]
 
 # Typen, die keine Noppen tragen.
-TYPEN_OHNE_NOPPEN = (TYP_FLIESE, TYP_LOCHBALKEN)
+TYPEN_OHNE_NOPPEN = (TYP_FLIESE, TYP_LOCHBALKEN, TYP_RUNDFLIESE)
+
+# Typen mit einer Schraege. Beim umgekehrten faellt sie an der Unterseite
+# weg statt an der Oberseite - oben bleibt die volle Noppenflaeche stehen.
+TYPEN_MIT_SCHRAEGE = (TYP_SCHRAEG, TYP_SCHRAEG_INV)
 
 # Typen mit Technic-Querbohrungen.
 TYPEN_MIT_BOHRUNG = (TYP_TECHNIC, TYP_LOCHBALKEN)
@@ -352,11 +359,12 @@ def _hoehe(typ):
         return GRUNDPLATTE_H
     if typ == TYP_HALBSTEIN:
         return HALBSTEIN_H
-    return PLATE_H if typ in (TYP_PLATTE, TYP_FLIESE, TYP_JUMPER) else BRICK_H
+    return PLATE_H if typ in (TYP_PLATTE, TYP_FLIESE, TYP_JUMPER,
+                              TYP_RUNDPLATTE, TYP_RUNDFLIESE) else BRICK_H
 
 
 def _ist_rund(typ):
-    return typ == TYP_RUND
+    return typ in (TYP_RUND, TYP_RUNDPLATTE, TYP_RUNDFLIESE)
 
 
 def _schenkel(nx, ny, w):
@@ -754,7 +762,7 @@ def baue_stein(design, typ, nx, ny, profil_name, y_versatz=0.0, klemm=None,
     occ = root.occurrences.addNewComponent(lage)
     comp = occ.component
     comp.name = '{} {}x{}'.format(typ, nx, ny)
-    if typ == TYP_SCHRAEG:
+    if typ in TYPEN_MIT_SCHRAEGE:
         comp.name += ' ({} Noppen Schraege)'.format(ns)
 
     op_neu = adsk.fusion.FeatureOperations.NewBodyFeatureOperation
@@ -784,12 +792,20 @@ def baue_stein(design, typ, nx, ny, profil_name, y_versatz=0.0, klemm=None,
     koerper = [body]
 
     # --- 1b. Schraege --------------------------------------------------------
-    # Die Schraege faellt zur Vorderkante (x = 0) hin ab und laeuft auf
-    # Plattenhoehe aus. Das Schnittprofil steht oben absichtlich ueber den
-    # Koerper hinaus, damit der Schnitt nicht tangential auf der Deckflaeche
-    # endet - das mag kein B-Rep-Kern.
+    # Beim normalen Schraegstein faellt die Schraege zur Vorderkante (x = 0)
+    # hin ab und laeuft auf Plattenhoehe aus; weggeschnitten wird oben.
+    #
+    # Der umgekehrte Schraegstein ist derselbe Keil an der Unterseite: oben
+    # bleibt die volle Flaeche mit allen Noppen stehen, vorn bleibt nur noch
+    # ein Streifen von Plattenhoehe. So schliessen die beiden Typen eine
+    # Dachkante von oben und von unten ab.
+    #
+    # Das Schnittprofil steht absichtlich ueber den Koerper hinaus, damit der
+    # Schnitt nicht tangential auf einer Flaeche endet - das mag kein
+    # B-Rep-Kern.
     schraege_l = 0.0
-    if typ == TYP_SCHRAEG:
+    schraege_unten = (typ == TYP_SCHRAEG_INV)
+    if typ in TYPEN_MIT_SCHRAEGE:
         schraege_l = min(ns, nx) * PITCH * fx
         sk_schraeg = comp.sketches.add(comp.xZConstructionPlane)
         sk_schraeg.name = 'Schraege'
@@ -797,8 +813,12 @@ def baue_stein(design, typ, nx, ny, profil_name, y_versatz=0.0, klemm=None,
         def _sp(x_mm, z_mm):
             return sk_schraeg.modelToSketchSpace(_pt(x_mm, 0.0, z_mm))
 
-        ecken = [_sp(0.0, schraeg_ende), _sp(schraege_l, hoehe),
-                 _sp(schraege_l, hoehe + 2.0), _sp(0.0, hoehe + 2.0)]
+        if schraege_unten:
+            ecken = [_sp(0.0, hoehe - schraeg_ende), _sp(schraege_l, 0.0),
+                     _sp(schraege_l, -2.0), _sp(0.0, -2.0)]
+        else:
+            ecken = [_sp(0.0, schraeg_ende), _sp(schraege_l, hoehe),
+                     _sp(schraege_l, hoehe + 2.0), _sp(0.0, hoehe + 2.0)]
         linien = sk_schraeg.sketchCurves.sketchLines
         for k in range(len(ecken)):
             linien.addByTwoPoints(ecken[k], ecken[(k + 1) % len(ecken)])
@@ -814,8 +834,13 @@ def baue_stein(design, typ, nx, ny, profil_name, y_versatz=0.0, klemm=None,
     # unter der Schraege nur so tief, wie die niedrigste Stelle es zulaesst.
     # Das reicht fuer die Noppe des darunterliegenden Steins mit Abstand,
     # und eine ebene Decke druckt sich ohnehin besser als eine schraege.
+    #
+    # Bei der umgekehrten Schraege ist unten vorn ueberhaupt kein Material
+    # mehr - es wurde ja gerade weggeschnitten. Dort gibt es also nichts
+    # auszuhoehlen und nichts, woran eine Roehre haengen koennte: flach_tiefe
+    # null laesst beides von selbst entfallen.
     hat_hohlraum = (typ != TYP_GRUNDPLATTE and sx - 2 * wall > 0.1)
-    flach_tiefe = max(schraeg_ende - TOP_WALL, 0.0)
+    flach_tiefe = 0.0 if schraege_unten else max(schraeg_ende - TOP_WALL, 0.0)
     if hat_hohlraum and _ist_rund(typ):
         sk_hohl = comp.sketches.add(comp.xYConstructionPlane)
         sk_hohl.name = 'Hohlraum'
@@ -836,7 +861,7 @@ def baue_stein(design, typ, nx, ny, profil_name, y_versatz=0.0, klemm=None,
 
     elif hat_hohlraum:
         stufen = []
-        if typ == TYP_SCHRAEG and schraege_l > wall:
+        if typ in TYPEN_MIT_SCHRAEGE and schraege_l > wall:
             grenze = min(schraege_l, sx - wall)
             if flach_tiefe > stud_h + NOPPEN_LUFT:
                 stufen.append((wall, grenze, flach_tiefe))
@@ -897,14 +922,17 @@ def baue_stein(design, typ, nx, ny, profil_name, y_versatz=0.0, klemm=None,
 
     # --- 4. Noppen (entfallen bei der Fliese) --------------------------------
     # Beim Schraegstein nur auf dem flachen Teil: eine Noppe auf der Schraege
-    # waere weder rasterhaltig noch druckbar.
+    # waere weder rasterhaltig noch druckbar. Bei der umgekehrten Schraege
+    # entfaellt dieser Filter - dort ist die Oberseite vollstaendig erhalten,
+    # und gerade das macht den Typ nuetzlich.
     hat_noppen = False
     if typ not in TYPEN_OHNE_NOPPEN:
         # Der Schraegstein filtert ueber die Modellkoordinate, weil dort die
         # Kalibrierung mitspielt; alle anderen Filter stecken in _noppen_stellen.
+        noppen_ab = 0.0 if schraege_unten else schraege_l
         stellen = [(raster_x(i), raster_y(j))
                    for i, j in _noppen_stellen(typ, nx, ny, w, gap)
-                   if raster_x(i) >= schraege_l]
+                   if raster_x(i) >= noppen_ab]
         if stellen:
             sk_noppen = comp.sketches.add(comp.xYConstructionPlane)
             sk_noppen.name = 'Noppen'
@@ -1005,7 +1033,7 @@ def _dateiname(typ, nx, ny, klemm=0.0, profil_name=None, ns=None, justage=None,
     # k00 = Nennmass, k05 = +0,05 mm, km08 = -0,08 mm.
     kuerzel = 'k{}{:02d}'.format('m' if klemm < 0 else '', int(round(abs(klemm) * 100)))
     masse = '{}x{}'.format(nx, ny) if not _ist_rund(typ) else 'd{}'.format(nx)
-    if typ == TYP_SCHRAEG and ns:
+    if typ in TYPEN_MIT_SCHRAEGE and ns:
         masse += 's{}'.format(min(ns, nx))
     if typ == TYP_ECK and schenkel:
         masse += 'L{}'.format(_schenkel(nx, ny, schenkel))
@@ -1204,19 +1232,25 @@ def _info_text(typ, nx, ny, profil_name, klemm=None, ns=1, justage=None,
             zeilen.append(
                 'Die Schenkelbreite wurde auf {} begrenzt &ndash; breiter waere '
                 'es kein L mehr.'.format(w))
-    if typ == TYP_RUND:
+    if _ist_rund(typ):
         zeilen.append(
             'Runder Grundriss, {} Noppen im Durchmesser. Breite folgt der '
             'Laenge; Noppen und Roehren, die ueber den Rand ragen wuerden, '
             'entfallen.'.format(nx))
-    if typ == TYP_SCHRAEG:
+    if typ in TYPEN_MIT_SCHRAEGE:
         wirksam = min(ns, nx)
         zeilen.append(
-            '<b>Schraege:</b> {} Noppen, {}&deg; &nbsp;|&nbsp; faellt von {} '
+            '<b>Schraege:</b> {} Noppen, {}&deg; &nbsp;|&nbsp; {} von {} '
             'auf {} mm'.format(wirksam,
                                _de(_schraegen_winkel(wirksam, hoehe, SCHRAEG_ENDE), 1),
+                               'steigt' if typ == TYP_SCHRAEG_INV else 'faellt',
                                _de(hoehe), _de(SCHRAEG_ENDE)))
-        if wirksam >= nx:
+        if typ == TYP_SCHRAEG_INV:
+            zeilen.append(
+                'Weggeschnitten wird an der <b>Unterseite</b> - oben bleibt '
+                'die volle Flaeche mit allen Noppen. Unter der Schraege gibt '
+                'es dafuer keine Roehren, dort klemmt das Teil nicht.')
+        elif wirksam >= nx:
             zeilen.append('Die Schraege nimmt die ganze Laenge ein - keine '
                           'Noppen auf der Oberseite.')
     if typ == TYP_GRUNDPLATTE:
@@ -1327,7 +1361,7 @@ def _sichtbarkeit(inputs):
     """Blendet aus, was zum gewaehlten Typ nicht passt."""
     try:
         typ = _finde(inputs, IN_TYP).selectedItem.name
-        _finde(inputs, IN_SCHRAEGE).isVisible = (typ == TYP_SCHRAEG)
+        _finde(inputs, IN_SCHRAEGE).isVisible = (typ in TYPEN_MIT_SCHRAEGE)
         _finde(inputs, IN_SCHENKEL).isVisible = (typ == TYP_ECK)
         _finde(inputs, IN_BOHRUNG).isVisible = (typ in TYPEN_MIT_BOHRUNG)
         # Die Noppen-Kantenbrechung braucht Noppen.
