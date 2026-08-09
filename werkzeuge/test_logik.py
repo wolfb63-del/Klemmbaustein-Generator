@@ -435,6 +435,49 @@ pruefe('Schraegstein 4x2 mit 2er-Schraege',
        len(K._noppen_stellen(K.TYP_SCHRAEG, 4, 2, 1, 0.20, 2)), 4)
 pruefe('Technic 4x2 hat 8 Noppen', len(K._noppen_stellen(K.TYP_TECHNIC, 4, 2)), 8)
 
+print('\n--- Roehren unter der Schraege ---')
+# Ein Schraegstein 4x2 mit 2 Noppen Schraege, unkalibriert. Die Roehren
+# stehen bei x = 7,9 / 15,9 / 23,9; die Schraege laeuft von x = 0 bis 16,0
+# und steigt dabei von 3,2 auf 9,6.
+SCHRAEGE_L = 2 * K.PITCH
+KAVITAET = K.BRICK_H - K.TOP_WALL
+FLACH = K.PLATE_H - K.TOP_WALL
+ROEHREN_X = [i * K.PITCH - 0.10 for i in (1, 2, 3)]
+
+
+def schraegen_hoehe(x):
+    """Hoehe der Schraegflaeche an der Stelle x."""
+    if x >= SCHRAEGE_L:
+        return K.BRICK_H
+    return K.PLATE_H + (x / SCHRAEGE_L) * (K.BRICK_H - K.PLATE_H)
+
+
+def hoehe_bei(x, schraege_l=SCHRAEGE_L, flach=FLACH):
+    return K._roehren_hoehe(x, K.TUBE_OD, schraege_l, KAVITAET, flach, K.STUD_H)
+
+
+pruefe('ohne Schraege volle Kavitaet', hoehe_bei(7.9, 0.0), KAVITAET)
+pruefe('erste Roehre wird gekuerzt', hoehe_bei(7.9), FLACH)
+pruefe('zweite Roehre ragt noch hinein', hoehe_bei(15.9), FLACH)
+pruefe('dritte Roehre steht frei', hoehe_bei(23.9), KAVITAET)
+
+# Der eigentliche Punkt: keine Roehre darf die Schraegflaeche durchstossen.
+# Massgeblich ist ihre vorderste Stelle - dort ist die Schraege am
+# niedrigsten.
+for x in ROEHREN_X:
+    vorne = x - K.TUBE_OD / 2.0
+    pruefe('Roehre bei x={:.1f} bleibt unter der Schraege'.format(x),
+           hoehe_bei(x) <= schraegen_hoehe(vorne) + 1e-9, True)
+
+# Gegenprobe: die volle Kavitaetshoehe waere bei den vorderen Roehren
+# genau der Fehler, den diese Pruefung verhindern soll.
+pruefe('volle Hoehe waere ein Durchstoss',
+       KAVITAET > schraegen_hoehe(ROEHREN_X[0] - K.TUBE_OD / 2.0), True)
+
+# Bleibt unter der Schraege weniger Platz als eine Noppe braucht, ist dort
+# keine Roehre mehr sinnvoll - sie klemmte nichts und stuende nur im Weg.
+pruefe('zu flach = keine Roehre', hoehe_bei(7.9, SCHRAEGE_L, K.STUD_H), 0.0)
+
 print('\n' + '=' * 70)
 if fehler:
     print('FEHLGESCHLAGEN: {}'.format(len(fehler)))

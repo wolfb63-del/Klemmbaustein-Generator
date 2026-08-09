@@ -235,6 +235,11 @@ Unter der Schräge ist der Hohlraum flacher (2,2 mm statt 8,6 mm), damit über
 ihm noch 1,0 mm Decke bleibt. Für die Noppe des darunterliegenden Steins
 reicht das mit 0,4 mm Luft — der Stein klemmt also auch vorn.
 
+Die Röhren in diesem Bereich sind genauso hoch wie dieser flache Hohlraum.
+Auf voller Höhe würden sie oben durch die Schrägfläche stoßen und sie
+aufrauen; geklemmt wird ohnehin nur an den obersten knapp zwei Millimetern
+der Noppe, die kürzere Röhre hält also genauso.
+
 ### Länge / Breite (Noppen)
 
 Anzahl der Noppen in X- bzw. Y-Richtung, 1 bis 32. Das Außenmaß ergibt sich

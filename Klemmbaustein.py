@@ -407,6 +407,34 @@ def _roehren_stellen(typ, nx, ny, w=1, gap=0.20, wall=1.20):
     return stellen
 
 
+# Luft ueber einer Noppe, damit ein Hohlraum sie noch aufnimmt statt sie
+# nur eben zu streifen.
+NOPPEN_LUFT = 0.2
+
+
+def _roehren_hoehe(x_mitte, tube_od, schraege_l, kavitaet, flach_tiefe, stud_h):
+    """Wie hoch eine Roehre an dieser Stelle in X werden darf.
+
+    Unter einer Schraege steht nicht die volle Bauhoehe zur Verfuegung: die
+    Schraegflaeche ist vorher schon weggeschnitten, und eine auf volle
+    Kavitaetshoehe gezogene Roehre ragte einfach oben durch sie hindurch -
+    die Schraege waere dann nicht mehr glatt.
+
+    Massgeblich ist die vorderste Stelle der Roehre, nicht ihre Mitte: dort
+    ist die Schraege am niedrigsten. Wo sie hineinragt, wird die Roehre auf
+    die Tiefe des flachen Hohlraums gekuerzt. Das reicht: geklemmt wird an
+    den obersten knapp zwei Millimetern der Noppe, nicht ueber die ganze
+    Laenge. Sie haengt dann an der Decke dieses flachen Hohlraums.
+
+    Rueckgabe 0.0 heisst: hier passt keine Roehre mehr.
+    """
+    if schraege_l <= 1e-9 or x_mitte - tube_od / 2.0 >= schraege_l - 1e-9:
+        return kavitaet
+    if flach_tiefe > stud_h + NOPPEN_LUFT:
+        return flach_tiefe
+    return 0.0
+
+
 def _stege_stellen(typ, nx, ny):
     """Stegpositionen bei 1xN-Teilen, als Noppen-Koordinaten.
 
@@ -809,7 +837,7 @@ def baue_stein(design, typ, nx, ny, profil_name, y_versatz=0.0, klemm=None,
         stufen = []
         if typ == TYP_SCHRAEG and schraege_l > wall:
             grenze = min(schraege_l, sx - wall)
-            if flach_tiefe > stud_h + 0.2:
+            if flach_tiefe > stud_h + NOPPEN_LUFT:
                 stufen.append((wall, grenze, flach_tiefe))
             if sx - wall > grenze + 0.1:
                 stufen.append((grenze, sx - wall, kavitaet))
@@ -824,9 +852,10 @@ def baue_stein(design, typ, nx, ny, profil_name, y_versatz=0.0, klemm=None,
 
     # --- 3. Klemmgeometrie an der Unterseite ---------------------------------
     # Ab 2x2: Roehren auf den inneren Rasterkreuzen. Bei 1xN: schmale Stege.
-    # Sie werden immer auf volle Kavitaetshoehe gezogen; wo der Hohlraum
-    # flacher ist, verschmilzt der Ueberstand einfach mit dem Vollmaterial
-    # darueber - die freie Laenge unten bleibt, und nur die zaehlt.
+    # Ueberall dort, wo ueber der Roehre volles Material steht, wird sie auf
+    # volle Kavitaetshoehe gezogen; der Ueberstand verschmilzt einfach mit
+    # dem Material darueber - die freie Laenge unten bleibt, und nur die
+    # zaehlt. Unter einer Schraege gilt das nicht, siehe _roehren_hoehe.
     roehren = []
     stege = []
     if hat_hohlraum:
@@ -835,18 +864,28 @@ def baue_stein(design, typ, nx, ny, profil_name, y_versatz=0.0, klemm=None,
         stege = [(raster_x(i), raster_y(j))
                  for i, j in _stege_stellen(typ, nx, ny)]
 
-    if roehren:
+    # Nach Bauhoehe gruppieren: ohne Schraege ist das eine einzige Gruppe und
+    # damit genau ein Skizzenpaar wie bisher.
+    hoehen = {}
+    for (x, y) in roehren:
+        h = _roehren_hoehe(x, tube_od, schraege_l, kavitaet, flach_tiefe, stud_h)
+        if h > 1e-9:
+            hoehen.setdefault(round(h, 6), []).append((x, y))
+    roehren = [stelle for gruppe in hoehen.values() for stelle in gruppe]
+
+    for index, h in enumerate(sorted(hoehen)):
+        zusatz = ' {}'.format(index + 1) if len(hoehen) > 1 else ''
         sk_aussen = comp.sketches.add(comp.xYConstructionPlane)
-        sk_aussen.name = 'Roehren aussen'
-        for (x, y) in roehren:
+        sk_aussen.name = 'Roehren aussen' + zusatz
+        for (x, y) in hoehen[h]:
             _kreis(sk_aussen, x, y, tube_od)
-        _extrude(comp, _alle_profile(sk_aussen), 0.0, kavitaet, op_add, koerper)
+        _extrude(comp, _alle_profile(sk_aussen), 0.0, h, op_add, koerper)
 
         sk_innen = comp.sketches.add(comp.xYConstructionPlane)
-        sk_innen.name = 'Roehren innen'
-        for (x, y) in roehren:
+        sk_innen.name = 'Roehren innen' + zusatz
+        for (x, y) in hoehen[h]:
             _kreis(sk_innen, x, y, rohr_id)
-        _extrude(comp, _alle_profile(sk_innen), 0.0, kavitaet, op_cut, koerper)
+        _extrude(comp, _alle_profile(sk_innen), 0.0, h, op_cut, koerper)
 
     if stege:
         sk_stege = comp.sketches.add(comp.xYConstructionPlane)
