@@ -152,6 +152,21 @@ AXLE_ARM = 1.8
 # Jede Verkleinerung der Noppe wirkt also 1:1 als Spiel.
 KLEMM_TANGENTE = 5.6569   # nur zur Anzeige / Kontrolle
 
+# Farben der Infozeile. Fusion rendert dort Qt-Rich-Text, also reicht ein
+# span mit color - mehr Gestaltung laesst der Dialog nicht zu.
+#
+# Bewusst mittelhelle Toene: der Dialog kann hell oder dunkel stehen, und
+# ein zartes Pastellgruen waere auf weissem Grund unlesbar, ein sattes
+# Dunkelrot auf schwarzem.
+FARBE_GUT = '#2fa84f'      # Nennmass getroffen
+FARBE_WARN = '#d98324'     # zu locker - haelt, aber nicht gut
+FARBE_FEHLER = '#d64541'   # zu stramm oder echte Warnung
+FARBE_LEISE = '#8a8f98'    # Nebeninformation
+
+
+def _farbig(text, farbe):
+    return '<span style="color:{}">{}</span>'.format(farbe, text)
+
 GRUNDPLATTE_H = 1.6   # Hoehe der grossen Grundplatte (ohne Klemmung unten)
 HALBSTEIN_H = 4.8     # halbe Steinhoehe - passt auf 1,5 Platten
 SCHRAEG_ENDE = PLATE_H  # Hoehe, auf die eine Schraege auslaeuft
@@ -1149,11 +1164,11 @@ def _info_text(typ, nx, ny, profil_name, klemm=None, ns=1, justage=None,
     # Betrag und schlaegt voll durch.
     rest = KLEMM_TANGENTE * fr - (noppen_d / 2.0 + (TUBE_OD * fr + k_rund) / 2.0)
     if rest > 0.015:
-        urteil = 'locker'
+        urteil, farbe = 'locker', FARBE_WARN
     elif rest < -0.015:
-        urteil = 'stramm'
+        urteil, farbe = 'stramm', FARBE_FEHLER
     else:
-        urteil = 'Nennmass'
+        urteil, farbe = 'Nennmass', FARBE_GUT
 
     kopf = ('<b>Aussenmass:</b> &oslash; {} &times; {} mm hoch'.format(
                 _de(sx), _de(hoehe)) if _ist_rund(typ) else
@@ -1171,7 +1186,9 @@ def _info_text(typ, nx, ny, profil_name, klemm=None, ns=1, justage=None,
             _de(nx * PITCH), _de(ny * PITCH), _de(p['gap'])),
         '<b>Noppen:</b> {} &times; &oslash; {} mm &nbsp;|&nbsp; '
         '<b>Wand:</b> {} mm'.format(noppen, _de(noppen_d), _de(p['wall'])),
-        '<b>Klemmung:</b> {} mm Luft am Kontakt ({})'.format(_de(rest, 3), urteil),
+        '<b>Klemmung:</b> {}'.format(
+            _farbig('{} mm Luft am Kontakt ({})'.format(_de(rest, 3), urteil),
+                    farbe)),
     ]
     # Die Masse oben sind die des MODELLS, also das, was Fusion tatsaechlich
     # baut und was ein Messen im Modell ergibt. Bei aktiver Kompensation ist
@@ -1179,12 +1196,13 @@ def _info_text(typ, nx, ny, profil_name, klemm=None, ns=1, justage=None,
     # hier daneben, sonst weiss man nicht mehr, worauf man hinauswill.
     if justage.ist_aktiv:
         zeilen.append(
-            '<b>Nach dem Druck erwartet:</b> {} mm &ndash; so viel kleiner '
-            'druckt dein Drucker das Modell wieder.'.format(
+            '<b>Nach dem Druck erwartet:</b> {} mm &ndash; {}'.format(
                 '{} &times; {} mm hoch'.format(_de(soll_x), _de(soll_h))
                 if _ist_rund(typ) else
                 '{} &times; {} &times; {}'.format(
-                    _de(soll_x), _de(soll_y), _de(soll_h))))
+                    _de(soll_x), _de(soll_y), _de(soll_h)),
+                _farbig('so viel kleiner druckt dein Drucker das Modell '
+                        'wieder.', FARBE_LEISE)))
         zeilen.append(
             '<b>Kalibrierung:</b> X {} % &nbsp;|&nbsp; Y {} % &nbsp;|&nbsp; '
             'Z {} % &nbsp;|&nbsp; Rundungen +{} mm '
@@ -1194,11 +1212,11 @@ def _info_text(typ, nx, ny, profil_name, klemm=None, ns=1, justage=None,
                 _de((justage.fz - 1.0) * 100.0, 3),
                 _de(justage.rund)))
         if abs(justage.fx - justage.fy) > FAKTOR_DIFF_WARNUNG:
-            zeilen.append(
+            zeilen.append(_farbig(
                 '<b>Achtung:</b> X und Y weichen um {} % voneinander ab. Der '
                 'Klemmkontakt liegt diagonal und hat nur 0,002 mm Reserve &ndash; '
                 'ab hier passt die runde Noppe nicht mehr sauber zur Roehre.'.format(
-                    _de(abs(justage.fx - justage.fy) * 100.0, 3)))
+                    _de(abs(justage.fx - justage.fy) * 100.0, 3)), FARBE_FEHLER))
 
     if justage.bricht_kanten:
         art = 'Radius' if justage.methode == METHODE_RADIUS else 'Fase'
@@ -1213,10 +1231,10 @@ def _info_text(typ, nx, ny, profil_name, klemm=None, ns=1, justage=None,
 
         if justage.kante_noppe > KANTE_NOPPE_WARNUNG:
             verlust = justage.kante_noppe / STUD_H * 100.0
-            zeilen.append(
+            zeilen.append(_farbig(
                 '<b>Achtung:</b> Die Noppe ist nur {} mm hoch &ndash; die '
                 'Kantenbrechung nimmt {} % der Klemmflaeche weg.'.format(
-                    _de(STUD_H), _de(verlust, 0)))
+                    _de(STUD_H), _de(verlust, 0)), FARBE_WARN))
 
         if vorschau_reduziert:
             zeilen.append(
@@ -1234,10 +1252,10 @@ def _info_text(typ, nx, ny, profil_name, klemm=None, ns=1, justage=None,
                 '<b>Querbohrungen:</b> {} &times; &oslash; {} mm auf {} mm Hoehe'.format(
                     nx, _de(TECHNIC_HOLE_D + p['hole']), _de(TECHNIC_AXIS_Z)))
         if hoehe - TECHNIC_AXIS_Z < TECHNIC_HOLE_D / 2.0:
-            zeilen.append(
+            zeilen.append(_farbig(
                 '<b>Achtung:</b> Die Bohrungsachse liegt auf {} mm, das Teil ist '
                 'nur {} mm hoch &ndash; die Bohrung bricht oben aus.'.format(
-                    _de(TECHNIC_AXIS_Z), _de(hoehe)))
+                    _de(TECHNIC_AXIS_Z), _de(hoehe)), FARBE_FEHLER))
     if typ == TYP_FLIESE:
         zeilen.append('Glatte Oberseite ohne Noppen.')
     if typ == TYP_LOCHBALKEN:
@@ -1411,6 +1429,11 @@ def _modellmass_uebernehmen(inputs):
         f_soll = _finde(inputs, ident_soll)
         f_ist = _finde(inputs, ident_ist)
         if not f_soll or not f_ist:
+            continue
+        # Eine Achse mit zwei leeren Feldern ist bewusst nicht kalibriert -
+        # etwa die Hoehe, wenn der Fehler dort aus der ersten Schicht kommt
+        # und ein Faktor nur schaden wuerde. Die bleibt leer.
+        if f_soll.value <= 1e-9 and f_ist.value <= 1e-9:
             continue
         f_soll.value = modell * MM
         # faktor ist nie 0: _faktor liefert bei leeren Feldern 1,0.

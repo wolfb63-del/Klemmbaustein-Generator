@@ -586,6 +586,28 @@ soll_neu = 31.80 * K._faktor(31.80, 31.74)
 pruefe('neue Messung rechnet auf dem Modellmass weiter',
        round((K._faktor(soll_neu, 31.77) - 1.0) * 100.0, 3), 0.284)
 
+print('\n--- Farben in der Infozeile ---')
+pruefe('Nennmass ist gruen',
+       K.FARBE_GUT in K._info_text(K.TYP_STEIN, 4, 2, 'PLA (0,2 mm Schicht)', 0.0),
+       True)
+pruefe('zu stramm ist rot',
+       K.FARBE_FEHLER in K._info_text(K.TYP_STEIN, 4, 2, 'PLA (0,2 mm Schicht)',
+                                      0.2),
+       True)
+pruefe('zu locker ist orange',
+       K.FARBE_WARN in K._info_text(K.TYP_STEIN, 4, 2, 'PLA (0,2 mm Schicht)',
+                                    -0.2),
+       True)
+pruefe('X/Y-Warnung ist rot',
+       K.FARBE_FEHLER in K._info_text(
+           K.TYP_STEIN, 4, 2, 'PLA (0,2 mm Schicht)', 0.0, 1,
+           K.Justage(fx=1.004, fy=1.0)), True)
+# Qt-Rich-Text schluckt unbekannte Tags stillschweigend - ein Tippfehler im
+# span faellt also nie auf. Deshalb hier nachzaehlen.
+t_farb = K._info_text(K.TYP_STEIN, 4, 2, 'PLA (0,2 mm Schicht)', 0.0)
+pruefe('jedes span wird geschlossen',
+       t_farb.count('<span'), t_farb.count('</span>'))
+
 print('\n' + '=' * 70)
 if fehler:
     print('FEHLGESCHLAGEN: {}'.format(len(fehler)))
