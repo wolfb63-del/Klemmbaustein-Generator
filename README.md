@@ -64,17 +64,48 @@ die man kennen sollte, bevor man kalibriert:
 
 Beides steht ausführlich in der [Anleitung](ANLEITUNG.md).
 
+## Kalibrierdatenbank
+
+[`kalibrierdatenbank.json`](kalibrierdatenbank.json) sammelt gemessene
+Kalibrierwerte aus echten Testdrucken, aufgeschlüsselt nach Material und
+Nozzle-Durchmesser — ein Startpunkt, wenn du noch keinen eigenen Testdruck
+vermessen hast. **Reines Nachschlage-Dokument:** Das Add-In liest die Datei
+nicht selbst, die Werte trägst du von Hand in die Kalibrierfelder im Dialog
+ein (siehe oben).
+
+Eigene Messwerte beisteuern: einen Eintrag nach diesem Muster per Pull
+Request ergänzen —
+
+```json
+{
+  "material": "PLA",
+  "nozzle_mm": 0.4,
+  "schrumpf_prozent": 0.24,
+  "rund_mm": 0.23,
+  "loch_mm": 0.00,
+  "drucker": "Snapmaker U1",
+  "datum": "2026-08-14"
+}
+```
+
+Mehrere Einträge zur selben Material/Nozzle-Kombination bleiben bewusst
+nebeneinander stehen statt gemittelt zu werden — die Streuung zeigt, wie
+verlässlich ein Wert ist. Eine GitHub Action prüft jeden Pull Request gegen
+die Wertegrenzen des Add-Ins (`werkzeuge/pruefe_kalibrierdatenbank.py`).
+
 ## Aufbau
 
 ```
-Klemmbaustein.py        Add-In: Geometrie, Dialog, Export
-bausteinbasis.py        gemeinsamer Unterbau (Einheiten, Skizzen, Kanten, STL)
-Klemmbaustein.manifest  Add-In-Beschreibung für Fusion
-resources/              Symbole für die Schaltfläche
+Klemmbaustein.py                    Add-In: Geometrie, Dialog, Export
+bausteinbasis.py                    gemeinsamer Unterbau (Einheiten, Skizzen, Kanten, STL)
+Klemmbaustein.manifest              Add-In-Beschreibung für Fusion
+kalibrierdatenbank.json             gemessene Kalibrierwerte aus der Community
+resources/                          Symbole für die Schaltfläche
 werkzeuge/
-  zeichnen.py           SVG-Zeichnungen aus den Konstruktionsdaten
-  anleitung_bauen.py    erzeugt anleitung.html
-  test_logik.py         prüft die Rechenlogik ohne Fusion
+  zeichnen.py                       SVG-Zeichnungen aus den Konstruktionsdaten
+  anleitung_bauen.py                erzeugt anleitung.html
+  test_logik.py                     prüft die Rechenlogik ohne Fusion
+  pruefe_kalibrierdatenbank.py      prüft kalibrierdatenbank.json gegen die Wertegrenzen
 ```
 
 Die Bilder der Anleitung entstehen aus denselben Funktionen, die auch die

@@ -1,0 +1,23 @@
+{
+  "hinweis": "Gemessene Kalibrierwerte pro Material/Nozzle-Kombination aus echten Testdrucken. Reines Nachschlage-Dokument - das Add-In liest diese Datei nicht automatisch, die Werte werden von Hand in die Kalibrierfelder im Dialog uebertragen (siehe README).",
+  "format": {
+    "material": "Freitext, z. B. 'PLA' oder 'PETG'",
+    "nozzle_mm": "Nozzle-Durchmesser in mm, z. B. 0.4",
+    "schrumpf_prozent": "Wert aus dem Feld 'Schrumpf' im Druckprofil, in Prozent",
+    "rund_mm": "Rundungs-Aufmass in mm (0.0 bis 0.60)",
+    "loch_mm": "Loch-Aufmass in mm (0.0 bis 0.60)",
+    "drucker": "Druckermodell, z. B. 'Snapmaker U1'",
+    "datum": "Datum der Messung, YYYY-MM-DD"
+  },
+  "eintraege": [
+    {
+      "material": "PLA",
+      "nozzle_mm": 0.4,
+      "schrumpf_prozent": 0.24,
+      "rund_mm": 0.23,
+      "loch_mm": 0.00,
+      "drucker": "Snapmaker U1",
+      "datum": "2026-08-14"
+    }
+  ]
+}
