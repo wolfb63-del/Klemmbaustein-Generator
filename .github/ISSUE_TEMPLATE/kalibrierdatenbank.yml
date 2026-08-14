@@ -1,0 +1,72 @@
+name: Kalibrierdatenbank-Beitrag
+description: Eigene gemessene Kalibrierwerte fuer kalibrierdatenbank.json melden
+title: "[Kalibrierdaten] "
+labels: ["kalibrierdatenbank"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Danke fürs Beitragen! Trag hier deine gemessenen Werte ein - sie
+        werden von Hand in [`kalibrierdatenbank.json`](../../kalibrierdatenbank.json)
+        übernommen. Erklärung der Felder steht dort im Abschnitt `"format"`
+        und in der [README](../../README.md#kalibrierdatenbank).
+
+  - type: input
+    id: material
+    attributes:
+      label: Material
+      placeholder: "PLA"
+    validations:
+      required: true
+
+  - type: input
+    id: nozzle_mm
+    attributes:
+      label: Nozzle-Durchmesser (mm)
+      placeholder: "0.4"
+    validations:
+      required: true
+
+  - type: input
+    id: schrumpf_prozent
+    attributes:
+      label: Schrumpf (%)
+      description: Wert aus dem Feld "Schrumpf" im Druckprofil, das damit kalibriert wurde.
+      placeholder: "0.24"
+    validations:
+      required: true
+
+  - type: input
+    id: rund_mm
+    attributes:
+      label: Rundungs-Aufmass (mm)
+      description: Zwischen 0.0 und 0.60 mm.
+      placeholder: "0.23"
+    validations:
+      required: true
+
+  - type: input
+    id: loch_mm
+    attributes:
+      label: Loch-Aufmass (mm)
+      description: Zwischen 0.0 und 0.60 mm. 0.00, falls nicht separat kalibriert.
+      placeholder: "0.00"
+    validations:
+      required: true
+
+  - type: input
+    id: drucker
+    attributes:
+      label: Druckermodell
+      placeholder: "Snapmaker U1"
+    validations:
+      required: true
+
+  - type: input
+    id: datum
+    attributes:
+      label: Datum der Messung
+      placeholder: "2026-08-14"
+      description: Format YYYY-MM-DD.
+    validations:
+      required: true

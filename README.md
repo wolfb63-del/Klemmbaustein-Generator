@@ -73,8 +73,12 @@ vermessen hast. **Reines Nachschlage-Dokument:** Das Add-In liest die Datei
 nicht selbst, die Werte trägst du von Hand in die Kalibrierfelder im Dialog
 ein (siehe oben).
 
-Eigene Messwerte beisteuern: einen Eintrag nach diesem Muster per Pull
-Request ergänzen —
+**Eigene Messwerte beisteuern, ohne Git zu benutzen:** [neues Issue mit dem
+Formular "Kalibrierdatenbank-Beitrag"](../../issues/new/choose) anlegen -
+die Werte werden von Hand in die Datei übernommen.
+
+Wer mit Git vertraut ist, ergänzt stattdessen direkt einen Eintrag nach
+diesem Muster per Pull Request —
 
 ```json
 {
