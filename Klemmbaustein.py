@@ -1987,6 +1987,12 @@ class KlemmbausteinExecutePreviewHandler(adsk.core.CommandEventHandler):
             args.isValidResult = False
 
         except Exception:
+            # Ohne dieses False bleibt Fusion beim Default True und rollt den
+            # gescheiterten Tick nicht zurueck, obwohl baue_stein die
+            # Occurrence schon selbst geloescht hat - der naechste Vorschau-
+            # Tick baut dann auf inkonsistentem Zustand auf, auch bei einem
+            # ganz anderen Typ.
+            args.isValidResult = False
             if ui:
                 ui.messageBox('Fehler in der Vorschau:\n{}'.format(traceback.format_exc()))
 
