@@ -5,6 +5,9 @@
 # Python
 __pycache__/
 *.py[cod]
+*.egg-info/
+build/
+dist/
 
 # Sicherungen vor dem Verteilen in die Add-In-Ordner
 _backup-*/
