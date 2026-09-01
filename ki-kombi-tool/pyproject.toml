@@ -1,0 +1,19 @@
+[project]
+name = "ki-kombi-tool"
+version = "0.1.0"
+description = "Schickt eine Anfrage gleichzeitig an Claude und ChatGPT und stellt beide Antworten nebeneinander."
+requires-python = ">=3.9"
+dependencies = [
+    "anthropic",
+    "openai",
+]
+
+[project.scripts]
+kombi = "kombi:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = ["kombi"]

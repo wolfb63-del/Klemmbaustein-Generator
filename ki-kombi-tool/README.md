@@ -9,9 +9,17 @@ Hilfswerkzeug in diesem Repo.
 
 ## Installation
 
+Global als Kommando `kombi` installieren (in einer virtuellen Umgebung
+oder mit `pip install --user`):
+
 ```bash
-pip install -r ki-kombi-tool/requirements.txt
+pip install ki-kombi-tool/
 ```
+
+Damit steht `kombi` danach von jedem Verzeichnis aus zur Verfügung — kein
+`python ki-kombi-tool/kombi.py` mehr nötig. Für Entwicklung mit Live-Reload
+statt `pip install ki-kombi-tool/` besser `pip install -e ki-kombi-tool/`
+verwenden.
 
 ## Einrichtung
 
@@ -25,19 +33,25 @@ export OPENAI_API_KEY="sk-..."
 ## Verwendung
 
 ```bash
-python ki-kombi-tool/kombi.py "Erkläre kurz, was ein Klemmbaustein ist."
+kombi "Erkläre kurz, was ein Klemmbaustein ist."
 ```
 
 Mit Vergleich (Claude liest beide Antworten gegen):
 
 ```bash
-python ki-kombi-tool/kombi.py "Erkläre kurz, was ein Klemmbaustein ist." --vergleich
+kombi "Erkläre kurz, was ein Klemmbaustein ist." --vergleich
 ```
 
 Andere Modelle wählen:
 
 ```bash
-python ki-kombi-tool/kombi.py "Frage" --claude-model claude-opus-4-1 --chatgpt-model gpt-4o-mini
+kombi "Frage" --claude-model claude-opus-4-1 --chatgpt-model gpt-4o-mini
+```
+
+Ohne Installation geht es weiterhin auch direkt per Skriptaufruf:
+
+```bash
+python ki-kombi-tool/kombi.py "Frage"
 ```
 
 ## Optionen
