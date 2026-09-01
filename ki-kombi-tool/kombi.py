@@ -77,12 +77,12 @@ def main():
     )
     parser.add_argument("prompt", help="Die Frage bzw. Anweisung fuer beide KIs.")
     parser.add_argument(
-        "--claude-model", default="claude-sonnet-4-5",
-        help="Anthropic-Modell (Standard: claude-sonnet-4-5).",
+        "--claude-model", default="claude-haiku-4-5",
+        help="Anthropic-Modell (Standard: claude-haiku-4-5, das guenstigste Claude-Modell).",
     )
     parser.add_argument(
-        "--chatgpt-model", default="gpt-4o",
-        help="OpenAI-Modell (Standard: gpt-4o).",
+        "--chatgpt-model", default="gpt-4o-mini",
+        help="OpenAI-Modell (Standard: gpt-4o-mini, das guenstigste ChatGPT-Modell).",
     )
     parser.add_argument(
         "--vergleich", action="store_true",

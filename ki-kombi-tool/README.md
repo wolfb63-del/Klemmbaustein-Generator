@@ -7,6 +7,11 @@ Optional lässt es Claude beide Antworten gegenlesen und zusammenfassen.
 Eigenständig und unabhängig vom Klemmbaustein-Generator — reines
 Hilfswerkzeug in diesem Repo.
 
+**Kosten:** Jede Anfrage bezahlt zwei API-Calls (bei `--vergleich` drei).
+Standardmäßig verwendet das Tool deshalb die günstigsten Modelle beider
+Anbieter (`claude-haiku-4-5` und `gpt-4o-mini`) — teurere Modelle lassen
+sich bei Bedarf über `--claude-model` / `--chatgpt-model` wählen.
+
 ## Installation
 
 Global als Kommando `kombi` installieren (in einer virtuellen Umgebung
@@ -42,10 +47,10 @@ Mit Vergleich (Claude liest beide Antworten gegen):
 kombi "Erkläre kurz, was ein Klemmbaustein ist." --vergleich
 ```
 
-Andere Modelle wählen:
+Andere (teurere) Modelle wählen:
 
 ```bash
-kombi "Frage" --claude-model claude-opus-4-1 --chatgpt-model gpt-4o-mini
+kombi "Frage" --claude-model claude-sonnet-4-5 --chatgpt-model gpt-4o
 ```
 
 Ohne Installation geht es weiterhin auch direkt per Skriptaufruf:
@@ -58,6 +63,6 @@ python ki-kombi-tool/kombi.py "Frage"
 
 | Option | Bedeutung |
 |---|---|
-| `--claude-model` | Anthropic-Modell (Standard: `claude-sonnet-4-5`) |
-| `--chatgpt-model` | OpenAI-Modell (Standard: `gpt-4o`) |
+| `--claude-model` | Anthropic-Modell (Standard: `claude-haiku-4-5`, das günstigste) |
+| `--chatgpt-model` | OpenAI-Modell (Standard: `gpt-4o-mini`, das günstigste) |
 | `--vergleich` | Lässt Claude beide Antworten zusätzlich gegenlesen und zusammenfassen |
